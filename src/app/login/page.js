@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
-import { EyeIcon, EyeOffIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -12,6 +12,7 @@ const poppins = Poppins({
 });
 
 export default function LoginPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -21,6 +22,8 @@ export default function LoginPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Login submitted:", formData);
+
+    router.push("/dashboard");
   };
 
   const handleChange = (e) => {
