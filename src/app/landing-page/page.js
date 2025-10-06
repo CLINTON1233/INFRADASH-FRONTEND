@@ -117,13 +117,6 @@ export default function LandingPage() {
           >
             VMware
           </Link>
-          <Link
-            href="/inventory"
-            onClick={() => setMenuOpen(false)}
-            className="text-lg"
-          >
-            Inventory
-          </Link>
 
           <div className="flex flex-col space-y-3 w-3/4 pt-6">
             <Link

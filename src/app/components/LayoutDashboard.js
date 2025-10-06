@@ -36,12 +36,12 @@ export default function LayoutDashboard({ children, activeMenu }) {
     { icon: Globe, label: "IPAM", hasDropdown: false, href: "/ipam" },
     { icon: Wifi, label: "WLC Controller", hasDropdown: false, href: "/wlc" },
     { icon: Monitor, label: "VMware", hasDropdown: false, href: "/vmware" },
-    {
-      icon: FileText,
-      label: "Field Inventory",
-      hasDropdown: false,
-      href: "/field-inventory",
-    },
+    // {
+    //   icon: FileText,
+    //   label: "Field Inventory",
+    //   hasDropdown: false,
+    //   href: "/field-inventory",
+    // },
     {
       icon: BarChart3,
       label: "Reports & Analytics",
@@ -60,7 +60,7 @@ export default function LayoutDashboard({ children, activeMenu }) {
       hasDropdown: false,
       href: "/settings",
     },
-    { icon: BookOpen, label: "User Guide", hasDropdown: false, href: "/guide" },
+    // { icon: BookOpen, label: "User Guide", hasDropdown: false, href: "/guide" },
   ];
 
   return (

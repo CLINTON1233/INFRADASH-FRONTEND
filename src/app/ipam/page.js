@@ -90,7 +90,7 @@ export default function IPAMPage() {
       subnet: "192.168.1.0/24",
       status: "active",
       deviceType: "Network Switch",
-      location: "Server Room",
+      location: "PMT 3.1",
       owner: "Network Team",
       description: "Core Switch Main",
       lastSeen: "2024-01-15 08:15",
@@ -137,8 +137,8 @@ export default function IPAMPage() {
       mac: "00:1E:9A:2B:3C:4D",
       subnet: "192.168.2.0/24",
       status: "active",
-      deviceType: "Security Camera",
-      location: "Main Entrance",
+      deviceType: "Security Camera for Petrobras",
+      location: "Engineering Building Floor 3",
       owner: "Security",
       description: "Entrance Security Camera",
       lastSeen: "2024-01-15 12:30",
@@ -169,8 +169,8 @@ export default function IPAMPage() {
       mac: "00:1F:5B:6C:7D:8E",
       subnet: "192.168.1.0/24",
       status: "conflict",
-      deviceType: "Server",
-      location: "Data Center",
+      deviceType: "Anviz",
+      location: "Main office Floor 1",
       owner: "Database Team",
       description: "Database Server - IP CONFLICT",
       lastSeen: "2024-01-15 09:10",
@@ -186,7 +186,7 @@ export default function IPAMPage() {
       subnet: "10.10.10.0/24",
       status: "active",
       deviceType: "Router",
-      location: "Network Room",
+      location: "Server Room",
       owner: "Network Team",
       description: "Main Router",
       lastSeen: "2024-01-15 07:00",
@@ -918,7 +918,7 @@ export default function IPAMPage() {
                     Hostname
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    User / Pengguna
+                    User
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     MAC Address
@@ -933,7 +933,7 @@ export default function IPAMPage() {
                     Device Type
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Lokasi
+                    Location
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions

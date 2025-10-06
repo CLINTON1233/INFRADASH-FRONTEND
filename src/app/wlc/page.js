@@ -22,6 +22,10 @@ import {
   MapPin,
   Server,
   Activity,
+  ChevronDown,
+  ChevronUp,
+  Menu,
+  X,
 } from "lucide-react";
 import {
   BarChart,
@@ -52,7 +56,22 @@ export default function WLCPage() {
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedWLC, setSelectedWLC] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showMobileTable, setShowMobileTable] = useState(false);
   const itemsPerPage = 8;
+
+  // Detect mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Data WLC
   const wlcData = [
@@ -282,26 +301,99 @@ export default function WLCPage() {
     );
   };
 
+  // Mobile Card View
+  const MobileWlcCard = ({ item }) => (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-3">
+      <div className="flex justify-between items-start mb-3">
+        <div className="flex items-center gap-2">
+          <div
+            className={`w-2 h-2 rounded-full ${
+              item.status === "online"
+                ? "bg-green-500"
+                : item.status === "offline"
+                ? "bg-red-500"
+                : "bg-yellow-500"
+            }`}
+          ></div>
+          <button
+            onClick={() => setSelectedWLC(item)}
+            className={`text-sm font-semibold text-gray-900 hover:text-blue-700 transition-colors text-left ${poppins.className}`}
+          >
+            {item.name}
+          </button>
+        </div>
+        <StatusBadge status={item.status} />
+      </div>
+
+      <div className="space-y-2 text-sm">
+        <div className="flex justify-between">
+          <span className="text-gray-600">IP Address</span>
+          <span className="font-mono text-gray-900">{item.ip}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-600">Clients</span>
+          <span className="font-semibold text-gray-900">
+            {item.clients}/{item.capacity}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-600">Access Points</span>
+          <span className="font-semibold text-gray-900">
+            {item.accessPoints}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-600">Bandwidth</span>
+          <span className="font-semibold text-gray-900">{item.bandwidth}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-600">Location</span>
+          <span className="text-gray-900 text-right">{item.location}</span>
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-200">
+        <div className="flex gap-1">
+          <button
+            onClick={() => setSelectedWLC(item)}
+            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+          >
+            <Eye className="w-4 h-4" />
+          </button>
+          <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all">
+            <Edit className="w-4 h-4" />
+          </button>
+          <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="text-xs text-gray-500">
+          CPU: {item.cpu}% | RAM: {item.memory}%
+        </div>
+      </div>
+    </div>
+  );
+
   // Modal Detail WLC
   const WLCDetailModal = ({ wlcData, onClose }) => (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
+        <div className="p-4 md:p-6">
           <div className="flex justify-between items-center mb-6">
             <h3
-              className={`text-xl text-black font-semibold text-gray-900 ${poppins.className}`}
+              className={`text-lg md:text-xl font-semibold text-gray-900 ${poppins.className}`}
             >
               WLC Controller Details
             </h3>
             <button
               onClick={onClose}
-              className="text-gray-400 text-black hover:text-gray-600"
+              className="text-gray-400 hover:text-gray-600 p-1"
             >
-              <XCircle className="w-6 h-6" />
+              <X className="w-6 h-6" />
             </button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 text-black">
             {/* Basic Info */}
             <div className="space-y-4">
               <div className="bg-gray-50 rounded-lg p-4">
@@ -310,31 +402,27 @@ export default function WLCPage() {
                 >
                   Basic Information
                 </h4>
-                <div className="grid grid-cols-2 gap-4 text-sm text-black">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                   <div className={poppins.className}>
-                    <label className="text-gray-500 text-black">
-                      Controller Name
-                    </label>
+                    <label className="text-gray-500">Controller Name</label>
                     <p className="font-semibold">{wlcData.name}</p>
                   </div>
                   <div className={poppins.className}>
-                    <label className="text-gray-500 text-black">Model</label>
+                    <label className="text-gray-500">Model</label>
                     <p className="font-semibold">{wlcData.model}</p>
                   </div>
                   <div className={poppins.className}>
-                    <label className="text-gray-500 text-black">
-                      IP Address
-                    </label>
+                    <label className="text-gray-500">IP Address</label>
                     <p className="font-mono">{wlcData.ip}</p>
                   </div>
                   <div className={poppins.className}>
-                    <label className="text-gray-500 text-black">Status</label>
+                    <label className="text-gray-500">Status</label>
                     <StatusBadge status={wlcData.status} />
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-4 text-black">
+              <div className="bg-gray-50 rounded-lg p-4">
                 <h4
                   className={`font-semibold text-gray-900 mb-3 ${poppins.className}`}
                 >
@@ -363,26 +451,28 @@ export default function WLCPage() {
 
             {/* Performance Metrics */}
             <div className="space-y-4">
-              <div className="bg-gray-50 rounded-lg p-4 text-black">
+              <div className="bg-gray-50 rounded-lg p-4">
                 <h4
                   className={`font-semibold text-gray-900 mb-3 ${poppins.className}`}
                 >
                   Performance Metrics
                 </h4>
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                   <div className={poppins.className}>
                     <label className="text-gray-500">Connected Clients</label>
-                    <p className="text-2xl font-bold text-blue-600">
+                    <p className="text-xl md:text-2xl font-bold text-blue-600">
                       {wlcData.clients}
                     </p>
                   </div>
                   <div className={poppins.className}>
                     <label className="text-gray-500">Access Points</label>
-                    <p className="text-2xl font-bold text-green-600">
+                    <p className="text-xl md:text-2xl font-bold text-green-600">
                       {wlcData.accessPoints}
                     </p>
                   </div>
-                  <div className={poppins.className}>
+                  <div
+                    className={`col-span-1 sm:col-span-2 ${poppins.className}`}
+                  >
                     <label className="text-gray-500">CPU Usage</label>
                     <div className="flex items-center gap-2">
                       <div className="w-full bg-gray-200 rounded-full h-2">
@@ -394,7 +484,9 @@ export default function WLCPage() {
                       <span className="font-semibold">{wlcData.cpu}%</span>
                     </div>
                   </div>
-                  <div className={poppins.className}>
+                  <div
+                    className={`col-span-1 sm:col-span-2 ${poppins.className}`}
+                  >
                     <label className="text-gray-500">Memory Usage</label>
                     <div className="flex items-center gap-2">
                       <div className="w-full bg-gray-200 rounded-full h-2">
@@ -409,7 +501,7 @@ export default function WLCPage() {
                 </div>
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-4 text-black">
+              <div className="bg-gray-50 rounded-lg p-4">
                 <h4
                   className={`font-semibold text-gray-900 mb-3 ${poppins.className}`}
                 >
@@ -443,7 +535,7 @@ export default function WLCPage() {
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 mt-8">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 md:mt-8">
             <button
               onClick={onClose}
               className={`px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition ${poppins.className}`}
@@ -451,7 +543,7 @@ export default function WLCPage() {
               Tutup
             </button>
             <button
-              className={`px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition flex items-center gap-2 ${poppins.className}`}
+              className={`px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 ${poppins.className}`}
             >
               <Edit className="w-4 h-4" />
               Edit WLC
@@ -464,112 +556,173 @@ export default function WLCPage() {
 
   return (
     <LayoutDashboard activeMenu={2}>
-      <div className={`${poppins.className} space-y-6`}>
+      <div className={`${poppins.className} space-y-2 md:space-y-4 p-2 md:p-4`}>
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h1 className="text-xl md:text-2xl font-semibold text-gray-800">
               Wireless LAN Controller (WLC)
             </h1>
-            <p className="text-gray-600 text-sm">
+            <p className="text-gray-600 text-sm mt-1">
               Monitor and manage all wireless controllers and access points
             </p>
           </div>
-          <div className="flex gap-3 mt-4 lg:mt-0">
+          <div className="flex flex-col sm:flex-row gap-3 mt-4 lg:mt-0">
             <button
-              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition ${poppins.className}`}
+              className={`flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition ${poppins.className}`}
             >
               <Download className="w-4 h-4" />
-              Export Report
+              <span className="hidden sm:inline">Export Report</span>
             </button>
             <button
-              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition ${poppins.className}`}
+              className={`flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition ${poppins.className}`}
             >
               <Plus className="w-4 h-4" />
-              Add WLC
+              <span className="hidden sm:inline">Add WLC</span>
+              <span className="sm:hidden">Add</span>
             </button>
           </div>
         </div>
 
-        {/* Alert Notification */}
-        {/* {wlcData.filter((wlc) => wlc.status === "offline").length > 0 && (
-          <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" />
-            <div className="flex-1">
-              <p
-                className={`text-sm font-medium text-red-800 ${poppins.className}`}
-              >
-                {wlcData.filter((wlc) => wlc.status === "offline").length} WLC
-                Controller Offline
-              </p>
-              <p className={`text-sm text-red-600 ${poppins.className}`}>
-                Immediate attention required for offline controllers
-              </p>
-            </div>
-            <button
-              className={`text-red-600 hover:text-red-800 text-sm font-medium ${poppins.className}`}
-            >
-              View Details
-            </button>
-          </div>
-        )} */}
-
         {/* Statistik */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {[
             {
               label: "Total WLC",
               value: stats.total,
               color: "bg-blue-50 text-blue-600 border-blue-200",
-              icon: <Server className="w-5 h-5" />,
+              icon: <Server className="w-4 h-4 md:w-5 md:h-5" />,
               description: "Controllers",
+              bgColor: "bg-blue-500",
+              percentage: "100%",
+              trend: "+2 this month",
+              trendColor: "text-green-600",
+              additionalInfo: `${stats.online} online, ${stats.offline} offline`,
+              progress: 100,
             },
             {
               label: "Online",
               value: stats.online,
               color: "bg-green-50 text-green-600 border-green-200",
-              icon: <CheckCircle className="w-5 h-5" />,
+              icon: <CheckCircle className="w-4 h-4 md:w-5 md:h-5" />,
               description: "Active controllers",
+              bgColor: "bg-green-500",
+              percentage: `${Math.round((stats.online / stats.total) * 100)}%`,
+              trend: `${Math.round(
+                (stats.online / stats.total) * 100
+              )}% uptime`,
+              trendColor: "text-green-600",
+              additionalInfo: `${stats.standby} in standby`,
+              progress: Math.round((stats.online / stats.total) * 100),
             },
             {
               label: "Total Clients",
               value: stats.totalClients,
               color: "bg-purple-50 text-purple-600 border-purple-200",
-              icon: <Users className="w-5 h-5" />,
+              icon: <Users className="w-4 h-4 md:w-5 md:h-5" />,
               description: "Connected devices",
+              bgColor: "bg-purple-500",
+              percentage: "Active",
+              trend: "+15% from yesterday",
+              trendColor: "text-blue-600",
+              additionalInfo: "Peak: 210 clients",
+              progress: 75,
             },
             {
               label: "Access Points",
               value: stats.totalAPs,
               color: "bg-orange-50 text-orange-600 border-orange-200",
-              icon: <Wifi className="w-5 h-5" />,
+              icon: <Wifi className="w-4 h-4 md:w-5 md:h-5" />,
               description: "Managed APs",
+              bgColor: "bg-orange-500",
+              percentage: "68 APs managed",
+              trend: "All regions covered",
+              trendColor: "text-orange-600",
+              additionalInfo: "Avg: 12 clients/AP",
+              progress: 85,
             },
           ].map((stat, idx) => (
             <div
               key={idx}
-              className="bg-white rounded-2xl shadow-lg p-5 border border-gray-100 hover:shadow-xl transition-all duration-300"
+              className="bg-white rounded-xl md:rounded-2xl shadow-sm md:shadow-lg p-3 md:p-5 border border-gray-100 hover:shadow-md md:hover:shadow-xl hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden"
             >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <p
-                    className={`text-2xl font-bold text-gray-900 mb-1 ${poppins.className}`}
+              <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+              <div className="relative z-10">
+                <div className="flex items-start justify-between mb-3 md:mb-4">
+                  <div className="flex-1">
+                    <p
+                      className={`text-2xl md:text-3xl font-bold text-gray-900 mb-1 md:mb-2 ${poppins.className}`}
+                    >
+                      {stat.value}
+                    </p>
+                    <div className="flex items-center gap-1 md:gap-2 mb-1">
+                      <p
+                        className={`text-xs md:text-sm font-semibold text-gray-700 ${poppins.className}`}
+                      >
+                        {stat.label}
+                      </p>
+                      <span
+                        className={`text-xs px-1.5 py-0.5 rounded-full ${
+                          stat.trendColor
+                        } bg-opacity-10 ${stat.trendColor.replace(
+                          "text",
+                          "bg"
+                        )}`}
+                      >
+                        {stat.percentage}
+                      </span>
+                    </div>
+                    <p
+                      className={`text-xs text-gray-500 mb-2 md:mb-3 ${poppins.className}`}
+                    >
+                      {stat.description}
+                    </p>
+                  </div>
+                  <div
+                    className={`p-2 md:p-3 rounded-lg md:rounded-xl ${stat.color} border group-hover:scale-110 transition-transform duration-300`}
                   >
-                    {stat.value}
-                  </p>
-                  <p
-                    className={`text-sm font-semibold text-gray-700 ${poppins.className}`}
-                  >
-                    {stat.label}
-                  </p>
-                  <p
-                    className={`text-xs text-gray-500 mt-1 ${poppins.className}`}
-                  >
-                    {stat.description}
-                  </p>
+                    {stat.icon}
+                  </div>
                 </div>
-                <div className={`p-3 rounded-xl ${stat.color} border`}>
-                  {stat.icon}
+
+                {/* Progress Bar */}
+                <div className="mb-3 md:mb-4">
+                  <div className="flex justify-between items-center text-xs mb-1 md:mb-2">
+                    <span className="text-gray-600">Capacity</span>
+                    <span className="font-semibold text-gray-900">
+                      {stat.progress}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-1.5 md:h-2 overflow-hidden">
+                    <div
+                      className={`h-1.5 md:h-2 rounded-full transition-all duration-1000 ease-out ${stat.bgColor}`}
+                      style={{ width: `${stat.progress}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Additional Information */}
+                <div className="space-y-1 md:space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={`text-xs font-medium ${stat.trendColor} ${poppins.className}`}
+                    >
+                      {stat.trend}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <div
+                        className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${stat.bgColor}`}
+                      ></div>
+                      <span className="text-xs text-gray-500">Live</span>
+                    </div>
+                  </div>
+
+                  <div
+                    className={`text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded-lg border ${poppins.className}`}
+                  >
+                    {stat.additionalInfo}
+                  </div>
                 </div>
               </div>
             </div>
@@ -577,23 +730,23 @@ export default function WLCPage() {
         </div>
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
           {/* Status Distribution */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <div className="bg-white rounded-xl md:rounded-2xl shadow-sm md:shadow-lg p-4 md:p-6 border border-gray-100">
             <h3
-              className={`text-lg font-semibold text-gray-900 mb-4 ${poppins.className}`}
+              className={`text-base md:text-lg font-semibold text-gray-900 mb-4 ${poppins.className}`}
             >
               Controller Status
             </h3>
-            <div className="h-64">
+            <div className="h-48 md:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={statusData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
+                    innerRadius={isMobile ? 40 : 60}
+                    outerRadius={isMobile ? 60 : 80}
                     paddingAngle={2}
                     dataKey="value"
                   >
@@ -602,33 +755,33 @@ export default function WLCPage() {
                     ))}
                   </Pie>
                   <Tooltip />
-                  <Legend />
+                  {!isMobile && <Legend />}
                 </PieChart>
               </ResponsiveContainer>
             </div>
           </div>
 
           {/* Client Trend */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <div className="bg-white rounded-xl md:rounded-2xl shadow-sm md:shadow-lg p-4 md:p-6 border border-gray-100">
             <h3
-              className={`text-lg font-semibold text-gray-900 mb-4 ${poppins.className}`}
+              className={`text-base md:text-lg font-semibold text-gray-900 mb-4 ${poppins.className}`}
             >
               Client Trend (24h)
             </h3>
-            <div className="h-64">
+            <div className="h-48 md:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={clientTrendData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="time" />
-                  <YAxis />
+                  <XAxis dataKey="time" fontSize={isMobile ? 12 : 14} />
+                  <YAxis fontSize={isMobile ? 12 : 14} />
                   <Tooltip />
-                  <Legend />
+                  {!isMobile && <Legend />}
                   <Line
                     type="monotone"
                     dataKey="clients"
                     stroke="#3B82F6"
                     strokeWidth={2}
-                    dot={{ r: 3 }}
+                    dot={{ r: isMobile ? 2 : 3 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -636,20 +789,20 @@ export default function WLCPage() {
           </div>
 
           {/* Bandwidth Usage */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <div className="bg-white rounded-xl md:rounded-2xl shadow-sm md:shadow-lg p-4 md:p-6 border border-gray-100">
             <h3
-              className={`text-lg font-semibold text-gray-900 mb-4 ${poppins.className}`}
+              className={`text-base md:text-lg font-semibold text-gray-900 mb-4 ${poppins.className}`}
             >
               Bandwidth Usage
             </h3>
-            <div className="h-64">
+            <div className="h-48 md:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={bandwidthData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                  <XAxis dataKey="name" fontSize={isMobile ? 12 : 14} />
+                  <YAxis fontSize={isMobile ? 12 : 14} />
                   <Tooltip />
-                  <Legend />
+                  {!isMobile && <Legend />}
                   <Bar dataKey="upload" name="Upload (Mbps)" fill="#8B5CF6" />
                   <Bar
                     dataKey="download"
@@ -663,24 +816,45 @@ export default function WLCPage() {
         </div>
 
         {/* Search dan Filter */}
-        <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
-          <div className="flex flex-col lg:flex-row gap-4">
+        <div className="bg-white rounded-xl md:rounded-2xl shadow-sm md:shadow-md p-4 md:p-6 border border-gray-100 text-black">
+          <div className="flex flex-col gap-4">
             {/* Search Input */}
-            <div className="flex-1 relative">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600" />
-              <input
-                type="text"
-                placeholder="Cari berdasarkan nama WLC, IP, atau lokasi..."
-                className={`w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${poppins.className}`}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            <div className="flex gap-3 text-black">
+              <div className="flex-1 relative">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600" />
+                <input
+                  type="text"
+                  placeholder="Cari berdasarkan nama WLC, IP, atau lokasi..."
+                  className={`w-full pl-10 pr-4 py-2.5 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${poppins.className}`}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+
+              {/* Mobile Filter Toggle */}
+              {isMobile && (
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`p-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center gap-2 text-sm ${poppins.className}`}
+                >
+                  <Filter className="w-4 h-4" />
+                  {showFilters ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </button>
+              )}
             </div>
 
             {/* Filters */}
-            <div className="flex gap-3">
+            <div
+              className={`flex flex-col sm:flex-row gap-3 ${
+                isMobile && !showFilters ? "hidden" : "flex"
+              }`}
+            >
               <select
-                className={`px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${poppins.className}`}
+                className={`px-3 md:px-4 py-2.5 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${poppins.className}`}
                 value={selectedLocation}
                 onChange={(e) => setSelectedLocation(e.target.value)}
               >
@@ -696,7 +870,7 @@ export default function WLCPage() {
               </select>
 
               <select
-                className={`px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${poppins.className}`}
+                className={`px-3 md:px-4 py-2.5 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm ${poppins.className}`}
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
               >
@@ -707,7 +881,7 @@ export default function WLCPage() {
               </select>
 
               <button
-                className={`px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center gap-2 text-sm ${poppins.className}`}
+                className={`px-3 md:px-4 py-2.5 md:py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition flex items-center justify-center gap-2 text-sm ${poppins.className}`}
               >
                 <RefreshCw className="w-4 h-4" />
                 Refresh
@@ -716,13 +890,13 @@ export default function WLCPage() {
           </div>
         </div>
 
-        {/* Tabel WLC */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
-            <div className="flex items-center justify-between">
+        {/* Tabel WLC - Desktop & Mobile Views */}
+        <div className="bg-white rounded-xl md:rounded-2xl shadow-sm md:shadow-lg border border-gray-100 overflow-hidden">
+          <div className="px-4 md:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h3
-                  className={`text-lg font-semibold text-gray-900 ${poppins.className}`}
+                  className={`text-base md:text-lg font-semibold text-gray-900 ${poppins.className}`}
                 >
                   Wireless Controllers
                 </h3>
@@ -732,214 +906,222 @@ export default function WLCPage() {
                   Real-time monitoring and management
                 </p>
               </div>
-              <span
-                className={`text-sm text-gray-500 bg-white px-3 py-1 rounded-full border ${poppins.className}`}
-              >
-                {filteredData.length} dari {wlcData.length} Controllers
-              </span>
+              <div className="flex items-center justify-between sm:justify-end mt-2 sm:mt-0">
+                <span
+                  className={`text-sm text-gray-500 bg-white px-3 py-1 rounded-full border ${poppins.className}`}
+                >
+                  {filteredData.length} dari {wlcData.length} Controllers
+                </span>
+                {isMobile && (
+                  <button
+                    onClick={() => setShowMobileTable(!showMobileTable)}
+                    className="ml-2 p-2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showMobileTable ? (
+                      <ChevronUp className="w-4 h-4" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4" />
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-                  <th
-                    className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
-                  >
-                    Controller
-                  </th>
-                  <th
-                    className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
-                  >
-                    Status
-                  </th>
-                  <th
-                    className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
-                  >
-                    Clients
-                  </th>
-                  <th
-                    className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
-                  >
-                    Access Points
-                  </th>
-                  <th
-                    className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
-                  >
-                    Bandwidth
-                  </th>
-                  <th
-                    className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
-                  >
-                    CPU/Memory
-                  </th>
-                  <th
-                    className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
-                  >
-                    Location
-                  </th>
-                  <th
-                    className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
-                  >
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {currentData.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="hover:bg-blue-50/30 transition-all duration-200 group"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-3 h-3 rounded-full ${
-                            item.status === "online"
-                              ? "bg-green-500"
-                              : item.status === "offline"
-                              ? "bg-red-500"
-                              : "bg-yellow-500"
-                          }`}
-                        ></div>
+          {/* Desktop Table */}
+          {!isMobile ? (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+                    <th
+                      className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                    >
+                      Controller
+                    </th>
+                    <th
+                      className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                    >
+                      Status
+                    </th>
+                    <th
+                      className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                    >
+                      Clients
+                    </th>
+                    <th
+                      className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                    >
+                      Access Points
+                    </th>
+                    <th
+                      className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                    >
+                      Bandwidth
+                    </th>
+                    <th
+                      className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                    >
+                      CPU/Memory
+                    </th>
+                    <th
+                      className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                    >
+                      Location
+                    </th>
+                    <th
+                      className={`px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${poppins.className}`}
+                    >
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {currentData.map((item) => (
+                    <tr
+                      key={item.id}
+                      className="hover:bg-blue-50/30 transition-all duration-200 group"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex flex-col">
+                            <button
+                              onClick={() => setSelectedWLC(item)}
+                              className={`text-sm font-semibold text-gray-900 hover:text-blue-700 transition-colors text-left group-hover:underline ${poppins.className}`}
+                            >
+                              {item.name}
+                            </button>
+                            <div
+                              className={`flex items-center gap-2 text-xs text-gray-500 ${poppins.className}`}
+                            >
+                              <span className="font-mono">{item.ip}</span>
+                              <span>•</span>
+                              <span>{item.model}</span>
+                            </div>
+                            <span
+                              className={`text-xs text-gray-400 ${poppins.className}`}
+                            >
+                              {item.ssid.split(",")[0]}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <StatusBadge status={item.status} />
+                      </td>
+                      <td className="px-6 py-4">
                         <div className="flex flex-col">
+                          <span
+                            className={`text-sm font-semibold text-gray-900 ${poppins.className}`}
+                          >
+                            {item.clients}
+                          </span>
+                          <span
+                            className={`text-xs text-gray-500 ${poppins.className}`}
+                          >
+                            of {item.capacity}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <Wifi className="w-4 h-4 text-gray-400" />
+                          <span
+                            className={`text-sm font-semibold text-gray-900 ${poppins.className}`}
+                          >
+                            {item.accessPoints}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <span
+                            className={`text-sm font-semibold text-gray-900 ${poppins.className}`}
+                          >
+                            {item.bandwidth}
+                          </span>
+                          <span
+                            className={`text-xs text-gray-500 ${poppins.className}`}
+                          >
+                            {item.status === "online" ? "Active" : "Inactive"}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col gap-1">
+                          <div
+                            className={`flex items-center gap-2 ${poppins.className}`}
+                          >
+                            <Activity className="w-3 h-3 text-blue-500" />
+                            <span className="text-xs text-black">
+                              CPU: {item.cpu}%
+                            </span>
+                          </div>
+                          <div
+                            className={`flex items-center gap-2 ${poppins.className}`}
+                          >
+                            <Server className="w-3 h-3 text-purple-500" />
+                            <span className="text-xs text-black">
+                              RAM: {item.memory}%
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <span
+                            className={`text-sm text-gray-900 ${poppins.className}`}
+                          >
+                            {item.location}
+                          </span>
+                          <span
+                            className={`text-xs text-gray-500 ${poppins.className}`}
+                          >
+                            {item.owner}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-1">
                           <button
                             onClick={() => setSelectedWLC(item)}
-                            className={`text-sm font-semibold text-gray-900 hover:text-blue-700 transition-colors text-left group-hover:underline ${poppins.className}`}
+                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                            title="View Details"
                           >
-                            {item.name}
+                            <Eye className="w-4 h-4" />
                           </button>
-                          <div
-                            className={`flex items-center gap-2 text-xs text-gray-500 ${poppins.className}`}
+                          <button
+                            className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200"
+                            title="Edit WLC"
                           >
-                            <span className="font-mono">{item.ip}</span>
-                            <span>•</span>
-                            <span>{item.model}</span>
-                          </div>
-                          <span
-                            className={`text-xs text-gray-400 ${poppins.className}`}
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                            title="Delete WLC"
                           >
-                            {item.ssid.split(",")[0]}
-                          </span>
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <StatusBadge status={item.status} />
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
-                        <span
-                          className={`text-sm font-semibold text-gray-900 ${poppins.className}`}
-                        >
-                          {item.clients}
-                        </span>
-                        <span
-                          className={`text-xs text-gray-500 ${poppins.className}`}
-                        >
-                          of {item.capacity}
-                        </span>
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <Wifi className="w-4 h-4 text-gray-400" />
-                        <span
-                          className={`text-sm font-semibold text-gray-900 ${poppins.className}`}
-                        >
-                          {item.accessPoints}
-                        </span>
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
-                        <span
-                          className={`text-sm font-semibold text-gray-900 ${poppins.className}`}
-                        >
-                          {item.bandwidth}
-                        </span>
-                        <span
-                          className={`text-xs text-gray-500 ${poppins.className}`}
-                        >
-                          {item.status === "online" ? "Active" : "Inactive"}
-                        </span>
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col gap-1">
-                        <div
-                          className={`flex items-center gap-2 ${poppins.className}`}
-                        >
-                          <Activity className="w-3 h-3 text-blue-500" />
-                          <span className="text-xs text-black">
-                            CPU: {item.cpu}%
-                          </span>
-                        </div>
-                        <div
-                          className={`flex items-center gap-2 ${poppins.className}`}
-                        >
-                          <Server className="w-3 h-3 text-purple-500" />
-                          <span className="text-xs text-black">
-                            RAM: {item.memory}%
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
-                        <span
-                          className={`text-sm text-gray-900 ${poppins.className}`}
-                        >
-                          {item.location}
-                        </span>
-                        <span
-                          className={`text-xs text-gray-500 ${poppins.className}`}
-                        >
-                          {item.owner}
-                        </span>
-                      </div>
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => setSelectedWLC(item)}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
-                          title="View Details"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200"
-                          title="Edit WLC"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                          title="Delete WLC"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            /* Mobile Cards View */
+            <div className={`p-4 ${showMobileTable ? "block" : "hidden"}`}>
+              {currentData.map((item) => (
+                <MobileWlcCard key={item.id} item={item} />
+              ))}
+            </div>
+          )}
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
-              <div className="flex items-center justify-between">
+            <div className="px-4 md:px-6 py-4 border-t border-gray-200 bg-gray-50">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <p className={`text-sm text-gray-700 ${poppins.className}`}>
                   Menampilkan{" "}
                   <span className="font-semibold">
@@ -956,7 +1138,7 @@ export default function WLCPage() {
                       setCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={currentPage === 1}
-                    className={`px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${poppins.className}`}
+                    className={`px-3 md:px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${poppins.className}`}
                   >
                     ← Previous
                   </button>
@@ -965,7 +1147,7 @@ export default function WLCPage() {
                       setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                     }
                     disabled={currentPage === totalPages}
-                    className={`px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${poppins.className}`}
+                    className={`px-3 md:px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${poppins.className}`}
                   >
                     Next →
                   </button>
@@ -985,7 +1167,7 @@ export default function WLCPage() {
       )}
 
       <footer
-        className={`mt-7 py-4 text-center text-black text-sm space-y-1 ${poppins.className}`}
+        className={`mt-6 py-4 text-center text-gray-600 text-sm space-y-1 ${poppins.className}`}
       >
         <p>Infradash Created by @Clinton Alfaro</p>
         <p>seatrium.com</p>

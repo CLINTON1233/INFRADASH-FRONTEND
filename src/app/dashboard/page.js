@@ -577,9 +577,12 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="mt-3 pt-2 border-t border-gray-100">
-              <button className="w-full text-center text-xs text-blue-600 font-medium hover:text-blue-800 transition">
-                Lihat Semua IP →
-              </button>
+              <a
+                href="/ipam"
+                className="block w-full text-center text-xs text-blue-600 font-medium hover:text-blue-800 transition"
+              >
+                View All IP →
+              </a>
             </div>
           </div>
 
@@ -644,9 +647,12 @@ export default function DashboardPage() {
               ))}
             </ul>
             <div className="mt-3 pt-2 border-t border-gray-100">
-              <button className="w-full text-center text-xs text-blue-600 font-medium hover:text-blue-800 transition">
-                Lihat Detail WLC →
-              </button>
+              <a
+                href="/wlc"
+                className="block w-full text-center text-xs text-blue-600 font-medium hover:text-blue-800 transition"
+              >
+                View All WLC Controllers →
+              </a>
             </div>
           </div>
 
@@ -703,9 +709,12 @@ export default function DashboardPage() {
               ))}
             </ul>
             <div className="mt-3 pt-2 border-t border-gray-100">
-              <button className="w-full text-center text-xs text-blue-600 font-medium hover:text-blue-800 transition">
-                Lihat Detail VMware →
-              </button>
+              <a
+                href="/vmware"
+                className="block w-full text-center text-xs text-blue-600 font-medium hover:text-blue-800 transition"
+              >
+                View All VMWARE →
+              </a>
             </div>
           </div>
         </div>
