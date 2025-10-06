@@ -78,7 +78,7 @@ export default function DashboardPage() {
             Infrastructure Dashboard
           </h1>
           <p className="text-gray-600 text-sm">
-            Monitoring infrastruktur jaringan dan sistem dalam satu tempat.
+           Monitoring network infrastructure and systems in one place.
           </p>
         </div>
         {/*  Statistik & Grafik */}
@@ -417,8 +417,8 @@ export default function DashboardPage() {
               <td className="py-1 text-gray-800 font-medium">IPAM</td>
               <td className="py-1 font-medium text-gray-900">192.168.1.12</td>
               <td className="py-1 text-green-600 font-semibold">Masuk</td>
-              <td className="py-1 text-gray-700">Subnet A</td>
-              <td className="py-1 text-gray-700">Network Team</td>
+              <td className="py-1 text-gray-700">Engineering Building</td>
+              <td className="py-1 text-gray-700">Operation & End User Service</td>
               <td className="py-1 text-right text-gray-600">Aktif</td>
               <td className="py-1 text-center">
                 <span className="bg-teal-500 text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-full">
@@ -439,8 +439,8 @@ export default function DashboardPage() {
               <td className="py-1 text-gray-800 font-medium">WLC</td>
               <td className="py-1 font-medium text-gray-900">WLC-02</td>
               <td className="py-1 text-red-500 font-semibold">Offline</td>
-              <td className="py-1 text-gray-700">Data Center 1</td>
-              <td className="py-1 text-gray-700">Wireless Team</td>
+              <td className="py-1 text-gray-700">Main Office Lantai 1</td>
+              <td className="py-1 text-gray-700">Facilities</td>
               <td className="py-1 text-right text-gray-600">Maintenance</td>
               <td className="py-1 text-center">
                 <span className="bg-yellow-400 text-black text-[9px] font-semibold px-1.5 py-0.5 rounded-full">
@@ -467,7 +467,7 @@ export default function DashboardPage() {
               <td className="py-1 font-medium text-gray-900">vCenter-01</td>
               <td className="py-1 text-green-600 font-semibold">Aktif</td>
               <td className="py-1 text-gray-700">Server Room</td>
-              <td className="py-1 text-gray-700">Infra Team</td>
+              <td className="py-1 text-gray-700">IT Infrastructure</td>
               <td className="py-1 text-right text-gray-600">12 VM</td>
               <td className="py-1 text-center">
                 <span className="bg-teal-500 text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-full">
@@ -596,9 +596,9 @@ export default function DashboardPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={[
-                      { name: "IPAM", volume: 1245, service: 98 },
-                      { name: "WLC", volume: 32, service: 85 },
-                      { name: "VMware", volume: 87, service: 92 },
+                      { name: "IPAM", volume: 12452, service: 9831 },
+                      { name: "WLC", volume: 10210, service: 8533 },
+                      { name: "VMware", volume: 11187, service: 9221 },
                     ]}
                     barCategoryGap="20%"
                   >
