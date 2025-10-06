@@ -168,7 +168,7 @@ export default function LandingPage() {
             operations.
           </p>
           <Link
-            href="/register"
+            href="/login"
             className="inline-block bg-blue-800 hover:bg-blue-700 text-white font-semibold px-6 sm:px-12 py-2 sm:py-3 rounded-full text-base sm:text-lg transition transform hover:scale-105 shadow-lg"
           >
             Get Started
