@@ -31,22 +31,42 @@ export default function LayoutDashboard({ children, activeMenu }) {
 
   const router = useRouter();
 
-   const menuItems = [
+  const menuItems = [
     { icon: Home, label: "Dashboard", hasDropdown: false, href: "/dashboard" },
     { icon: Globe, label: "IPAM", hasDropdown: false, href: "/ipam" },
     { icon: Wifi, label: "WLC Controller", hasDropdown: false, href: "/wlc" },
     { icon: Monitor, label: "VMware", hasDropdown: false, href: "/vmware" },
-    { icon: FileText, label: "Field Inventory", hasDropdown: false, href: "/field-inventory" },
-    { icon: BarChart3, label: "Reports & Analytics", hasDropdown: false, href: "/reports" },
-    { icon: Users, label: "User Management", hasDropdown: false, href: "/users" },
-    { icon: Settings, label: "System Settings", hasDropdown: false, href: "/settings" },
+    {
+      icon: FileText,
+      label: "Field Inventory",
+      hasDropdown: false,
+      href: "/field-inventory",
+    },
+    {
+      icon: BarChart3,
+      label: "Reports & Analytics",
+      hasDropdown: false,
+      href: "/reports",
+    },
+    {
+      icon: Users,
+      label: "User Management",
+      hasDropdown: false,
+      href: "/users",
+    },
+    {
+      icon: Settings,
+      label: "System Settings",
+      hasDropdown: false,
+      href: "/settings",
+    },
     { icon: BookOpen, label: "User Guide", hasDropdown: false, href: "/guide" },
   ];
-
 
   return (
     <div className="min-h-screen bg-gray-100">
       {/* 🔹 Top Navbar - Mobile & Desktop */}
+
       <nav className="bg-white shadow-sm">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -59,8 +79,8 @@ export default function LayoutDashboard({ children, activeMenu }) {
               priority
             />
           </div>
-           {/* 🧭 Teks INFRADASH di tengah */}
-    {/* <div className="absolute left-1/2 transform -translate-x-1/2">
+          {/* 🧭 Teks INFRADASH di tengah */}
+          {/* <div className="absolute left-1/2 transform -translate-x-1/2">
       <h1 className="text-xl md:text-2xl font-semibold text-gray-800">
         INFRADASH
       </h1>
@@ -110,7 +130,9 @@ export default function LayoutDashboard({ children, activeMenu }) {
                     if (item.href) {
                       router.push(item.href);
                     } else {
-                      setActiveMenuIndex(activeMenuIndex === index ? null : index);
+                      setActiveMenuIndex(
+                        activeMenuIndex === index ? null : index
+                      );
                     }
                   }}
                 >

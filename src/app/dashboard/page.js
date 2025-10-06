@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import LayoutDashboard from "../components/LayoutDashboard";
 import { DollarSign, ShoppingBag, Package, Users } from "lucide-react";
-import { Eye } from "lucide-react";
+import { Eye, Search, Filter, AlertTriangle, Menu, X } from "lucide-react";
 import Link from "next/link";
-import { Pencil, Check } from "lucide-react";
+import { Pencil, Check, Server, Wifi, Cpu, Box } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -17,9 +17,18 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 
 export default function DashboardPage() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedIP, setSelectedIP] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   useEffect(() => {
     const link = document.createElement("link");
     link.href =
@@ -28,37 +37,43 @@ export default function DashboardPage() {
     document.head.appendChild(link);
   }, []);
 
+  // Data untuk statistik
   const stats = [
     {
       title: "Total IP Terdaftar",
       value: "1.245",
       change: "+5% hari ini",
-      icon: <DollarSign className="w-5 h-5 text-blue-600" />,
+      icon: <Cpu className="w-5 h-5 text-blue-600" />,
       bg: "bg-blue-50",
+      description: "Jumlah IP yang terdaftar di sistem IPAM",
     },
     {
       title: "WLC Aktif",
       value: "32",
       change: "+1 unit",
-      icon: <ShoppingBag className="w-5 h-5 text-orange-500" />,
+      icon: <Wifi className="w-5 h-5 text-orange-500" />,
       bg: "bg-orange-50",
+      description: "Jumlah WLC yang online",
     },
     {
       title: "VM Aktif",
       value: "87",
       change: "+3 host",
-      icon: <Package className="w-5 h-5 text-green-600" />,
+      icon: <Server className="w-5 h-5 text-green-600" />,
       bg: "bg-green-50",
+      description: "Jumlah VM aktif di VMware Hosts",
     },
     {
-      title: "Aset Lapangan",
+      title: "Aset Perangkat dilapangan",
       value: "560",
       change: "+12 unit",
-      icon: <Users className="w-5 h-5 text-purple-600" />,
+      icon: <Box className="w-5 h-5 text-purple-600" />,
       bg: "bg-purple-50",
+      description: "Total perangkat yang aktif",
     },
   ];
 
+  // Data untuk chart
   const chartData = [
     { name: "Jan", IP: 400, WLC: 240, VMware: 240 },
     { name: "Feb", IP: 300, WLC: 139, VMware: 221 },
@@ -69,30 +84,362 @@ export default function DashboardPage() {
     { name: "Jul", IP: 349, WLC: 430, VMware: 210 },
   ];
 
+  // Data untuk WLC Status Chart
+  const wlcStatusData = [
+    { name: "Online", value: 3, color: "#10B981" },
+    { name: "Offline", value: 2, color: "#EF4444" },
+    { name: "Standby", value: 1, color: "#6B7280" },
+  ];
+
+  // Data untuk VMware Resource Usage
+  const vmwareResourceData = [
+    { name: "vCenter-01", cpu: 65, ram: 72, storage: 80 },
+    { name: "vCenter-02", cpu: 45, ram: 60, storage: 55 },
+    { name: "vBackup", cpu: 30, ram: 40, storage: 90 },
+  ];
+
+  // Data detail infrastruktur yang lebih lengkap
+  const infrastructureData = [
+    {
+      id: 1,
+      category: "IPAM",
+      ip: "192.168.1.12",
+      hostname: "Server01",
+      mac: "00:1A:2B:3C:4D:5E",
+      subnet: "192.168.1.0/24",
+      status: "Aktif",
+      location: "Engineering Building",
+      owner: "Operation & End User Service",
+      description: "Aktif",
+      questionnaire: "Completed",
+      lastUpdated: "2024-01-15 14:30",
+      assignedUser: "john.doe@company.com",
+    },
+    {
+      id: 2,
+      category: "WLC",
+      name: "WLC-02",
+      status: "Offline",
+      location: "Main Office Lantai 1",
+      owner: "Facilities",
+      description: "Maintenance",
+      questionnaire: "Pending",
+      clients: 0,
+      ssid: "OfficeWiFi",
+      bandwidth: "0 Mbps",
+      uptime: "0 hours",
+    },
+    {
+      id: 3,
+      category: "VMware",
+      name: "vCenter-01",
+      status: "Aktif",
+      location: "Server Room",
+      owner: "IT Infrastructure",
+      description: "12 VM",
+      questionnaire: "Completed",
+      cpu: 65,
+      ram: 72,
+      storage: 80,
+      vms: 12,
+      vmsRunning: 11,
+      vmsStopped: 1,
+    },
+    {
+      id: 4,
+      category: "IPAM",
+      ip: "10.10.10.3",
+      hostname: "Switch-Core-01",
+      mac: "00:1B:44:11:3A:2B",
+      subnet: "10.10.10.0/24",
+      status: "Aktif",
+      location: "Data Center",
+      owner: "Network Team",
+      description: "Core Switch",
+      questionnaire: "Completed",
+      lastUpdated: "2024-01-15 10:22",
+      assignedUser: "network.admin@company.com",
+    },
+    {
+      id: 5,
+      category: "WLC",
+      name: "WLC-01",
+      status: "Online",
+      location: "Main Office Lantai 2",
+      owner: "IT Infrastructure",
+      description: "Operational",
+      questionnaire: "Completed",
+      clients: 52,
+      ssid: "OfficeWiFi,GuestWiFi",
+      bandwidth: "120 Mbps",
+      uptime: "45 days",
+    },
+  ];
+
+  // Filter data berdasarkan pencarian dan filter
+  const filteredData = infrastructureData.filter((item) => {
+    const matchesSearch =
+      searchTerm === "" ||
+      (item.category === "IPAM" &&
+        item.ip?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (item.category !== "IPAM" &&
+        item.name?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      item.hostname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.location.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesCategory =
+      selectedCategory === "all" || item.category === selectedCategory;
+    const matchesStatus =
+      selectedStatus === "all" || item.status === selectedStatus;
+
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
+
+  // Komponen Modal untuk Detail IP
+  const IPDetailModal = ({
+    ip,
+    hostname,
+    mac,
+    subnet,
+    status,
+    location,
+    owner,
+    lastUpdated,
+    assignedUser,
+    onClose,
+  }) => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+      <div className="bg-white rounded-xl shadow-2xl border border-gray-300 w-full max-w-md max-h-[90vh] overflow-y-auto">
+        {/* Modal Header */}
+        <div className="bg-green-600 text-white px-4 py-3 rounded-t-xl sticky top-0">
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-semibold">Detail IP Address</h2>
+            <button
+              onClick={onClose}
+              className="text-white text-xl font-bold hover:text-gray-200 transition w-6 h-6 flex items-center justify-center"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+
+        {/* Modal Body */}
+        <div className="px-4 py-4">
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-medium text-gray-500">
+                  IP Address
+                </label>
+                <p className="text-sm font-semibold text-gray-900">{ip}</p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500">
+                  Status
+                </label>
+                <p
+                  className={`text-sm font-semibold ${
+                    status === "Aktif" ? "text-green-600" : "text-red-500"
+                  }`}
+                >
+                  {status}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-medium text-gray-500">
+                  Hostname
+                </label>
+                <p className="text-sm text-gray-900">{hostname}</p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500">
+                  MAC Address
+                </label>
+                <p className="text-sm text-gray-900 font-mono">{mac}</p>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-gray-500">
+                Subnet
+              </label>
+              <p className="text-sm text-gray-900">{subnet}</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-medium text-gray-500">
+                  Lokasi
+                </label>
+                <p className="text-sm text-gray-900">{location}</p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-gray-500">
+                  Owner
+                </label>
+                <p className="text-sm text-gray-900">{owner}</p>
+              </div>
+            </div>
+
+            {lastUpdated && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-medium text-gray-500">
+                    Last Updated
+                  </label>
+                  <p className="text-sm text-gray-900">{lastUpdated}</p>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-500">
+                    Assigned User
+                  </label>
+                  <p className="text-sm text-gray-900 break-all">
+                    {assignedUser}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Modal Footer */}
+        <div className="bg-gray-50 px-4 py-3 rounded-b-xl border-t border-gray-200 sticky bottom-0">
+          <div className="flex flex-col sm:flex-row gap-2 justify-end">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition flex-1 sm:flex-none"
+            >
+              Tutup
+            </button>
+            <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition flex-1 sm:flex-none">
+              Edit Detail
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Mobile Filter Modal
+  const MobileFilterModal = ({ onClose, onApply }) => (
+    <div className="fixed inset-0 z-50 flex items-end justify-center p-4 bg-black bg-opacity-50 sm:items-center">
+      <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] overflow-y-auto">
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-gray-900">Filter</h3>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        </div>
+
+        <div className="p-4 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Kategori
+            </label>
+            <select
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-black"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="all">Semua Kategori</option>
+              <option value="IPAM">IPAM</option>
+              <option value="WLC">WLC</option>
+              <option value="VMware">VMware</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Status
+            </label>
+            <select
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-black"
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+            >
+              <option value="all">Semua Status</option>
+              <option value="Aktif">Aktif</option>
+              <option value="Offline">Offline</option>
+              <option value="Nonaktif">Nonaktif</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="p-4 border-t border-gray-200">
+          <div className="flex gap-2">
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+            >
+              Batal
+            </button>
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+            >
+              Terapkan
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <LayoutDashboard activeMenu={0}>
-      <div className="font-[Poppins] space-y-6">
-        {/*  Header Dashboard */}
-        <div>
+      <div className="font-[Poppins] space-y-4 sm:space-y-6">
+        {/* Mobile Header */}
+        <div className="sm:hidden bg-white p-4 rounded-2xl shadow-md border border-gray-100">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-semibold text-gray-800">
+                Infrastructure Dashboard
+              </h1>
+              <p className="text-gray-600 text-xs">
+                Monitoring network infrastructure
+              </p>
+            </div>
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="p-2 rounded-lg bg-gray-100"
+            >
+              <Filter size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* Header Dashboard - Desktop */}
+        <div className="hidden sm:block">
           <h1 className="text-xl md:text-2xl font-semibold text-gray-800">
             Infrastructure Dashboard
           </h1>
           <p className="text-gray-600 text-sm">
-           Monitoring network infrastructure and systems in one place.
+            Monitoring network infrastructure and systems in one place.
           </p>
         </div>
-        {/*  Statistik & Grafik */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        {/* Statistik & Grafik */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Card Statistik */}
-          <div className="bg-white rounded-2xl shadow-md p-5 border border-gray-100">
+          <div className="bg-white rounded-2xl shadow-md p-4 sm:p-5 border border-gray-100">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-base font-semibold text-gray-900">
                   Today's Infrastructure
                 </h2>
-                <p className="text-sm text-gray-500">Infrastructure Summary</p>
+                <p className="text-sm text-gray-500 hidden sm:block">
+                  Infrastructure Summary
+                </p>
               </div>
-              <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition">
+              <button className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 transition">
                 <svg
                   className="w-4 h-4"
                   fill="none"
@@ -110,94 +457,8 @@ export default function DashboardPage() {
               </button>
             </div>
 
-            {/* Grid Statistik */}
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                {
-                  title: "Servers Active",
-                  value: "128",
-                  change: "+4.2% this week",
-                  icon: (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-5 h-5 text-blue-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 6h16M4 10h16M4 14h16M4 18h16"
-                      />
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Network Devices",
-                  value: "342",
-                  change: "+1.8% this week",
-                  icon: (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-5 h-5 text-green-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 4v16m8-8H4"
-                      />
-                    </svg>
-                  ),
-                },
-                {
-                  title: "User Sessions",
-                  value: "1,203",
-                  change: "-0.5% this week",
-                  icon: (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-5 h-5 text-yellow-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17 20h5V4H2v16h5m10 0v-6h-4v6"
-                      />
-                    </svg>
-                  ),
-                },
-                {
-                  title: "Alerts",
-                  value: "15",
-                  change: "+2 Critical",
-                  icon: (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-5 h-5 text-red-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 9v2m0 4h.01M5.07 19h13.86a2 2 0 001.74-3l-6.93-12a2 2 0 00-3.48 0l-6.93 12a2 2 0 001.74 3z"
-                      />
-                    </svg>
-                  ),
-                },
-              ].map((item, idx) => (
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              {stats.map((item, idx) => (
                 <div
                   key={idx}
                   className="rounded-xl bg-white p-3 flex flex-col items-start justify-between border border-gray-100 shadow-sm hover:shadow-md transition"
@@ -212,8 +473,11 @@ export default function DashboardPage() {
                     <p className="text-xs font-medium text-gray-700 leading-tight">
                       {item.title}
                     </p>
-                    <p className="text-[10px] text-gray-500 mt-1">
+                    <p className="text-[12px] text-gray-500 mt-1">
                       {item.change}
+                    </p>
+                    <p className="text-[12px] text-gray-400 mt-1 hidden sm:block">
+                      {item.description}
                     </p>
                   </div>
                 </div>
@@ -221,26 +485,29 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/*  Card Grafik */}
-          <div className="bg-white rounded-2xl shadow-md p-5 border border-gray-100">
+          {/* Card Grafik */}
+          <div className="bg-white rounded-2xl shadow-md p-4 sm:p-5 border border-gray-100">
             <div className="mb-4">
               <h2 className="text-base font-semibold text-gray-900">
-                Visitor Insights
+                Infrastructure Trends
               </h2>
-              <p className="text-sm text-gray-500">Infrastructure Statistics</p>
+              <p className="text-sm text-gray-500">Monthly Statistics</p>
             </div>
-            <div className="w-full h-56">
+            <div className="w-full h-48 sm:h-56">
               <ResponsiveContainer>
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} />
                   <Tooltip
+                    formatter={(value, name) => {
+                      return [`${value} unit`, name];
+                    }}
                     contentStyle={{
                       backgroundColor: "white",
                       border: "1px solid #e5e7eb",
                       borderRadius: "8px",
-                      fontSize: "11px",
+                      fontSize: "12px",
                     }}
                   />
                   <Legend wrapperStyle={{ fontSize: "11px" }} />
@@ -271,386 +538,498 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/*  Ringkasan Infrastruktur (Card Nyata - Diperbanyak) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
-          {/*  IPAM Card */}
+        {/* Ringkasan Infrastruktur */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-5">
+          {/* IPAM Card */}
           <div className="bg-white rounded-2xl shadow-md p-4 border border-gray-100 flex flex-col justify-between hover:shadow-lg transition">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-semibold text-gray-800">
                 IPAM Activity
               </h3>
-              <span className="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+              <span className="text-[12px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
                 Live
               </span>
             </div>
-            <div className="flex justify-between text-xs">
-              <div>
-                <p className="text-gray-600">Masuk</p>
-                <p className="font-bold text-green-600">192.168.1.12</p>
-                <p className="font-bold text-green-600">10.10.10.3</p>
-                <p className="font-bold text-green-600">172.16.1.15</p>
-                <p className="font-bold text-green-600">192.168.10.20</p>
-                <p className="font-bold text-green-600">10.0.0.25</p>
+            <div className="space-y-2 text-xs text-black max-h-32 overflow-y-auto">
+              <div className="flex justify-between items-center p-2 bg-green-50 rounded-lg">
+                <div className="flex-1">
+                  <p className="font-semibold text-green-700">192.168.1.12</p>
+                  <p className="text-gray-600 truncate">
+                    Server01 • 00:1A:2B:3C:4D:5E
+                  </p>
+                  <p className="text-gray-500">192.168.1.0/24</p>
+                </div>
+                <span className="bg-green-500 text-white px-2 py-1 rounded-full text-[12px] ml-2">
+                  Aktif
+                </span>
               </div>
-              <div className="text-right">
-                <p className="text-gray-600">Keluar</p>
-                <p className="font-bold text-red-500">172.16.0.8</p>
-                <p className="font-bold text-red-500">192.168.2.20</p>
-                <p className="font-bold text-red-500">10.10.20.5</p>
-                <p className="font-bold text-red-500">192.168.100.50</p>
-                <p className="font-bold text-red-500">172.20.10.1</p>
+              <div className="flex justify-between items-center p-2 bg-red-50 rounded-lg">
+                <div className="flex-1">
+                  <p className="font-semibold text-red-700">172.16.0.8</p>
+                  <p className="text-gray-600 truncate">
+                    Switch-02 • 00:1B:44:11:3A:2B
+                  </p>
+                  <p className="text-gray-500">172.16.0.0/24</p>
+                </div>
+                <span className="bg-red-500 text-white px-2 py-1 rounded-full text-[12px] ml-2">
+                  Nonaktif
+                </span>
               </div>
+            </div>
+            <div className="mt-3 pt-2 border-t border-gray-100">
+              <button className="w-full text-center text-xs text-blue-600 font-medium hover:text-blue-800 transition">
+                Lihat Semua IP →
+              </button>
             </div>
           </div>
 
-          {/*  WLC Card */}
+          {/* WLC Card */}
           <div className="bg-white rounded-2xl shadow-md p-4 border border-gray-100 flex flex-col justify-between hover:shadow-lg transition">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-semibold text-gray-800">
                 WLC Controllers
               </h3>
-              <span className="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+              <span className="text-[12px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
                 Summary
               </span>
             </div>
-            <ul className="text-xs space-y-1 max-h-32 overflow-y-auto">
-              <li className="flex justify-between">
-                <span className="text-gray-700">WLC-01</span>
-                <span className="font-medium text-green-600">Online</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-700">WLC-02</span>
-                <span className="font-medium text-red-500">Offline</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-700">WLC-Backup</span>
-                <span className="font-medium text-gray-500">Standby 💤</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-700">WLC-03</span>
-                <span className="font-medium text-green-600">Online</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-700">WLC-DR</span>
-                <span className="font-medium text-gray-500">Standby 💤</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-700">WLC-TestLab</span>
-                <span className="font-medium text-green-600">Online</span>
-              </li>
+            <ul className="text-xs text-black space-y-2 max-h-32 overflow-y-auto">
+              {[
+                {
+                  name: "WLC-01",
+                  status: "Online",
+                  clients: 52,
+                  ssid: "OfficeWiFi",
+                  bandwidth: "120 Mbps",
+                  uptime: "45 days",
+                },
+                {
+                  name: "WLC-02",
+                  status: "Offline",
+                  clients: 0,
+                  ssid: "OfficeWiFi",
+                  bandwidth: "0 Mbps",
+                  uptime: "0 hours",
+                },
+              ].map((wlc, idx) => (
+                <li
+                  key={idx}
+                  className="flex justify-between items-start p-2 bg-gray-50 rounded-lg"
+                >
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="font-medium text-gray-700">
+                        {wlc.name}
+                      </span>
+                      <span
+                        className={`font-medium text-xs px-2 py-1 rounded-full ${
+                          wlc.status === "Online"
+                            ? "bg-green-100 text-green-800"
+                            : wlc.status === "Offline"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {wlc.status}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-1 text-[12px] text-gray-600">
+                      <div>Clients: {wlc.clients}</div>
+                      <div>SSID: {wlc.ssid}</div>
+                      <div>Bandwidth: {wlc.bandwidth}</div>
+                      <div>Uptime: {wlc.uptime}</div>
+                    </div>
+                  </div>
+                </li>
+              ))}
             </ul>
+            <div className="mt-3 pt-2 border-t border-gray-100">
+              <button className="w-full text-center text-xs text-blue-600 font-medium hover:text-blue-800 transition">
+                Lihat Detail WLC →
+              </button>
+            </div>
           </div>
 
-          {/*  VMware Card */}
+          {/* VMware Card */}
           <div className="bg-white rounded-2xl shadow-md p-4 border border-gray-100 flex flex-col justify-between hover:shadow-lg transition">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-semibold text-gray-800">
                 VMware Hosts
               </h3>
-              <span className="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+              <span className="text-[12px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
                 Summary
               </span>
             </div>
-            <ul className="text-xs space-y-1 max-h-32 overflow-y-auto">
-              <li className="flex justify-between">
-                <span className="text-gray-700">vCenter-01</span>
-                <span className="font-medium text-green-600">12 VM</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-700">vCenter-02</span>
-                <span className="font-medium text-green-600">8 VM</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-700">vBackup</span>
-                <span className="font-medium text-gray-500">3 Snapshot</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-700">vLab-Test</span>
-                <span className="font-medium text-green-600">6 VM</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-700">vDR-Site</span>
-                <span className="font-medium text-green-600">5 VM</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-700">vLegacy</span>
-                <span className="font-medium text-gray-500">2 Snapshot</span>
-              </li>
+            <ul className="text-xs text-black space-y-2 max-h-32 overflow-y-auto">
+              {[
+                {
+                  name: "vCenter-01",
+                  vms: "12 VM",
+                  status: "Aktif",
+                  cpu: 65,
+                  ram: 72,
+                  storage: 80,
+                  vmsRunning: 11,
+                  vmsStopped: 1,
+                },
+                {
+                  name: "vCenter-02",
+                  vms: "8 VM",
+                  status: "Aktif",
+                  cpu: 45,
+                  ram: 60,
+                  storage: 55,
+                  vmsRunning: 8,
+                  vmsStopped: 0,
+                },
+              ].map((vm, idx) => (
+                <li key={idx} className="p-2 bg-gray-50 rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium text-gray-700">{vm.name}</span>
+                    <span className="font-medium text-green-600">{vm.vms}</span>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[12px]">
+                      <span>CPU: {vm.cpu}%</span>
+                      <span>RAM: {vm.ram}%</span>
+                      <span>Storage: {vm.storage}%</span>
+                    </div>
+                    <div className="text-[12px] text-gray-600">
+                      VM Status: {vm.vmsRunning} running, {vm.vmsStopped}{" "}
+                      stopped
+                    </div>
+                  </div>
+                </li>
+              ))}
             </ul>
-          </div>
-        </div>
-
-         <div className="bg-white rounded-2xl shadow-md p-4 border border-gray-100">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-semibold text-gray-900">Detail Infrastruktur</h2>
-        <button className="p-1.5 rounded-lg hover:bg-gray-100 transition">
-          <svg
-            className="w-4 h-4 text-gray-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v.01M12 12v.01M12 18v.01" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs text-left">
-          <thead>
-            <tr className="text-[10px] text-gray-500 uppercase tracking-wider border-b bg-gray-50">
-              <th className="py-1 font-medium">Kategori</th>
-              <th className="py-1 font-medium">Nama / IP</th>
-              <th className="py-1 font-medium">Status</th>
-              <th className="py-1 font-medium">Lokasi</th>
-              <th className="py-1 font-medium">Owner</th>
-              <th className="py-1 font-medium text-right">Keterangan</th>
-              <th className="py-1 font-medium text-center">Questionnaire</th>
-              <th className="py-1 font-medium text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* IPAM - Completed */}
-            <tr className="border-b last:border-0 hover:bg-gray-50 transition">
-              <td className="py-1 text-gray-800 font-medium">IPAM</td>
-              <td className="py-1 font-medium text-gray-900">192.168.1.12</td>
-              <td className="py-1 text-green-600 font-semibold">Masuk</td>
-              <td className="py-1 text-gray-700">Engineering Building</td>
-              <td className="py-1 text-gray-700">Operation & End User Service</td>
-              <td className="py-1 text-right text-gray-600">Aktif</td>
-              <td className="py-1 text-center">
-                <span className="bg-teal-500 text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-full">
-                  Completed
-                </span>
-              </td>
-              <td className="py-1 text-center flex justify-center gap-1">
-                <Link href="/ipam-detail">
-                  <button className="p-1 rounded-md bg-gray-500 hover:bg-gray-600 text-white transition">
-                    <Pencil size={12} />
-                  </button>
-                </Link>
-              </td>
-            </tr>
-
-            {/* WLC - Pending */}
-            <tr className="border-b last:border-0 hover:bg-gray-50 transition">
-              <td className="py-1 text-gray-800 font-medium">WLC</td>
-              <td className="py-1 font-medium text-gray-900">WLC-02</td>
-              <td className="py-1 text-red-500 font-semibold">Offline</td>
-              <td className="py-1 text-gray-700">Main Office Lantai 1</td>
-              <td className="py-1 text-gray-700">Facilities</td>
-              <td className="py-1 text-right text-gray-600">Maintenance</td>
-              <td className="py-1 text-center">
-                <span className="bg-yellow-400 text-black text-[9px] font-semibold px-1.5 py-0.5 rounded-full">
-                  Pending
-                </span>
-              </td>
-              <td className="py-1 text-center flex justify-center gap-1">
-                <Link href="/wlc-detail">
-                  <button className="p-1 rounded-md bg-gray-500 hover:bg-gray-600 text-white transition">
-                    <Pencil size={12} />
-                  </button>
-                </Link>
-                <Link href="/wlc-approve">
-                  <button className="p-1 rounded-md bg-yellow-400 hover:bg-yellow-500 text-black transition">
-                    <Check size={12} />
-                  </button>
-                </Link>
-              </td>
-            </tr>
-
-            {/* VMware - Completed */}
-            <tr className="border-b last:border-0 hover:bg-gray-50 transition">
-              <td className="py-1 text-gray-800 font-medium">VMware</td>
-              <td className="py-1 font-medium text-gray-900">vCenter-01</td>
-              <td className="py-1 text-green-600 font-semibold">Aktif</td>
-              <td className="py-1 text-gray-700">Server Room</td>
-              <td className="py-1 text-gray-700">IT Infrastructure</td>
-              <td className="py-1 text-right text-gray-600">12 VM</td>
-              <td className="py-1 text-center">
-                <span className="bg-teal-500 text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-full">
-                  Completed
-                </span>
-              </td>
-              <td className="py-1 text-center flex justify-center gap-1">
-                <Link href="/vmware-detail">
-                  <button className="p-1 rounded-md bg-gray-500 hover:bg-gray-600 text-white transition">
-                    <Pencil size={12} />
-                  </button>
-                </Link>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-        {/*  Card Tabel */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/*  Check Table Card */}
-          <div className="bg-white rounded-2xl shadow-md p-5 border border-gray-100 flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-semibold text-gray-900">
-                Check Table
-              </h2>
-              <button className="p-2 rounded-lg hover:bg-gray-100 transition">
-                <svg
-                  className="w-5 h-5 text-gray-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6v.01M12 12v.01M12 18v.01"
-                  />
-                </svg>
+            <div className="mt-3 pt-2 border-t border-gray-100">
+              <button className="w-full text-center text-xs text-blue-600 font-medium hover:text-blue-800 transition">
+                Lihat Detail VMware →
               </button>
             </div>
+          </div>
+        </div>
 
-            {/*  Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left">
-                <thead>
-                  <tr className="text-xs text-gray-500 uppercase tracking-wider border-b">
-                    <th className="pb-2 font-medium">Name</th>
-                    <th className="pb-2 font-medium">Progress</th>
-                    <th className="pb-2 font-medium text-right">Quantity</th>
-                    <th className="pb-2 font-medium text-right">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    {
-                      name: "IPAM Monitoring",
-                      progress: "17.5%",
-                      quantity: "2.458",
-                      date: "24 Jan 2025",
-                    },
-                    {
-                      name: "WLC Active Units",
-                      progress: "10.8%",
-                      quantity: "1.485",
-                      date: "12 Jun 2025",
-                    },
-                    {
-                      name: "VMware Weekly Update",
-                      progress: "21.3%",
-                      quantity: "1.024",
-                      date: "5 Jul 2025",
-                    },
-                    {
-                      name: "Switch Health Check",
-                      progress: "32.1%",
-                      quantity: "3.102",
-                      date: "9 Sep 2025",
-                    },
-                    {
-                      name: "Firewall Rules Audit",
-                      progress: "14.7%",
-                      quantity: "987",
-                      date: "3 Oct 2025",
-                    },
-                  ].map((row, idx) => (
-                    <tr
-                      key={idx}
-                      className="border-b last:border-0 hover:bg-gray-50 transition"
-                    >
-                      <td className="py-2 font-medium text-gray-800 text-[13px]">
-                        {row.name}
-                      </td>
-                      <td className="py-2 text-gray-700 text-[13px]">
-                        {row.progress}
-                      </td>
-                      <td className="py-2 text-right font-medium text-gray-900 text-[13px]">
-                        {row.quantity}
-                      </td>
-                      <td className="py-2 text-right text-gray-600 text-[13px]">
-                        {row.date}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        {/* Search dan Filter Bar */}
+        <div className="bg-white rounded-2xl shadow-md p-4 border border-gray-100">
+          <div className="flex flex-col gap-3">
+            {/* Search Input */}
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600" />
+              <input
+                type="text"
+                placeholder="Cari berdasarkan IP, hostname, atau lokasi..."
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-black"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            {/* Filter - Desktop */}
+            <div className="hidden sm:flex gap-2">
+              <select
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-black"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="all">Semua Kategori</option>
+                <option value="IPAM">IPAM</option>
+                <option value="WLC">WLC</option>
+                <option value="VMware">VMware</option>
+              </select>
+
+              <select
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-black"
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+              >
+                <option value="all">Semua Status</option>
+                <option value="Aktif">Aktif</option>
+                <option value="Offline">Offline</option>
+                <option value="Nonaktif">Nonaktif</option>
+              </select>
+            </div>
+
+            {/* Filter Button - Mobile */}
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="sm:hidden flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white"
+            >
+              <Filter size={16} />
+              Filter Data
+            </button>
+          </div>
+        </div>
+
+        {/* Tabel Detail Infrastruktur */}
+        <div className="bg-white rounded-2xl shadow-md p-4 border border-gray-100">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-gray-900">
+              Detail Infrastruktur
+            </h2>
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <span className="hidden sm:inline">
+                Menampilkan {filteredData.length} items
+              </span>
+              <span className="sm:hidden">{filteredData.length} items</span>
             </div>
           </div>
 
-          {/*  Persentase Infrastruktur Card */}
-          <div className="bg-white rounded-2xl shadow-md p-5 border border-gray-100 flex flex-col justify-between">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-semibold text-gray-900">
-                Infrastruktur — Volume & Service Level
-              </h2>
-              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                Minggu Ini
-              </span>
-            </div>
-
-            {/* Chart */}
-            <div className="flex-1 flex items-center justify-center">
-              <div className="w-full h-48">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={[
-                      { name: "IPAM", volume: 12452, service: 9831 },
-                      { name: "WLC", volume: 10210, service: 8533 },
-                      { name: "VMware", volume: 11187, service: 9221 },
-                    ]}
-                    barCategoryGap="20%"
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead>
+                <tr className="text-[12px] text-gray-500 uppercase tracking-wider border-b bg-gray-50">
+                  <th className="py-2 px-1 font-medium">Kategori</th>
+                  <th className="py-2 px-1 font-medium">Detail</th>
+                  <th className="py-2 px-1 font-medium">Status</th>
+                  <th className="py-2 px-1 font-medium">Lokasi</th>
+                  <th className="py-2 px-1 font-medium">Owner</th>
+                  <th className="py-2 px-1 font-medium text-right">
+                    Keterangan
+                  </th>
+                  <th className="py-2 px-1 font-medium text-center">
+                    Questionnaire
+                  </th>
+                  <th className="py-2 px-1 font-medium text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.map((item) => (
+                  <tr
+                    key={item.id}
+                    className="border-b last:border-0 hover:bg-gray-50 transition"
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" tick={{ fontSize: 10 }} />
-                    <YAxis tick={{ fontSize: 10 }} />
-                    <Tooltip
-                      formatter={(value, name) =>
-                        name === "service" ? `${value}%` : value
-                      }
-                      contentStyle={{
-                        fontSize: "10px",
-                        borderRadius: "8px",
-                        border: "1px solid #e5e7eb",
-                      }}
-                    />
-                    <Legend wrapperStyle={{ fontSize: "10px" }} />
-                    <Bar
-                      dataKey="volume"
-                      name="Volume (unit)"
-                      fill="#2563eb"
-                      radius={[4, 4, 0, 0]}
-                    />
-                    <Bar
-                      dataKey="service"
-                      name="Service Level (%)"
-                      fill="#10b981"
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
+                    <td className="py-2 px-1 text-gray-800 font-medium">
+                      {item.category}
+                    </td>
 
-            {/* Legend bawah */}
-            <div className="flex justify-center gap-6 mt-3 text-xs text-gray-600">
-              <div className="flex items-center gap-1">
-                <span className="w-3 h-3 bg-blue-600 rounded-full"></span>
-                Volume Total (1.924)
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="w-3 h-3 bg-green-500 rounded-full mb-5"></span>
-                Service Rata-rata (87.5%)
-              </div>
+                    <td className="py-2 px-1 font-medium text-gray-900">
+                      {item.category === "IPAM" ? (
+                        <button
+                          onClick={() => setSelectedIP(item)}
+                          className="text-left hover:text-blue-600 transition-colors"
+                        >
+                          <div className="font-mono">{item.ip}</div>
+                          <div className="text-gray-500 text-[12px]">
+                            Host: {item.hostname}
+                          </div>
+                          <div className="text-gray-500 text-[12px]">
+                            MAC: {item.mac}
+                          </div>
+                          <div className="text-gray-500 text-[12px]">
+                            Subnet: {item.subnet}
+                          </div>
+                        </button>
+                      ) : item.category === "WLC" ? (
+                        <div>
+                          <div>{item.name}</div>
+                          <div className="text-gray-500 text-[12px]">
+                            Clients: {item.clients}
+                          </div>
+                          <div className="text-gray-500 text-[12px]">
+                            SSID: {item.ssid}
+                          </div>
+                          <div className="text-gray-500 text-[12px]">
+                            Bandwidth: {item.bandwidth}
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div>{item.name}</div>
+                          <div className="text-gray-500 text-[12px]">
+                            CPU: {item.cpu}% | RAM: {item.ram}%
+                          </div>
+                          <div className="text-gray-500 text-[12px]">
+                            Storage: {item.storage}%
+                          </div>
+                          <div className="text-gray-500 text-[12px]">
+                            VMs: {item.vmsRunning} running, {item.vmsStopped}{" "}
+                            stopped
+                          </div>
+                        </div>
+                      )}
+                    </td>
+
+                    <td className="py-2 px-1">
+                      <span
+                        className={`font-semibold text-[12px] px-2 py-1 rounded-full ${
+                          item.status === "Aktif" || item.status === "Online"
+                            ? "bg-green-100 text-green-800"
+                            : item.status === "Offline"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
+
+                    <td className="py-2 px-1 text-gray-700 text-[13px]">
+                      {item.location}
+                    </td>
+                    <td className="py-2 px-1 text-gray-700 text-[13px]">
+                      {item.owner}
+                    </td>
+                    <td className="py-2 px-1 text-right text-gray-600 text-[13px]">
+                      {item.description}
+                    </td>
+
+                    <td className="py-2 px-1 text-center">
+                      <span
+                        className={`text-[9px] font-semibold px-2 py-1 rounded-full ${
+                          item.questionnaire === "Completed"
+                            ? "bg-teal-500 text-white"
+                            : "bg-yellow-400 text-black"
+                        }`}
+                      >
+                        {item.questionnaire}
+                      </span>
+                    </td>
+
+                    <td className="py-2 px-1 text-center">
+                      <div className="flex justify-center gap-1">
+                        {item.category === "IPAM" ? (
+                          <button
+                            onClick={() => setSelectedIP(item)}
+                            className="p-1 rounded-md bg-gray-500 hover:bg-gray-600 text-white transition"
+                          >
+                            <Eye size={12} />
+                          </button>
+                        ) : item.category === "WLC" ? (
+                          <>
+                            <Link href="/wlc-detail">
+                              <button className="p-1 rounded-md bg-gray-500 hover:bg-gray-600 text-white transition">
+                                <Pencil size={12} />
+                              </button>
+                            </Link>
+                            <Link href="/wlc-approve">
+                              <button className="p-1 rounded-md bg-yellow-400 hover:bg-yellow-500 text-black transition">
+                                <Check size={12} />
+                              </button>
+                            </Link>
+                          </>
+                        ) : (
+                          <Link href="/vmware-detail">
+                            <button className="p-1 rounded-md bg-gray-500 hover:bg-gray-600 text-white transition">
+                              <Pencil size={12} />
+                            </button>
+                          </Link>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Charts dan Visualisasi Tambahan */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          {/* WLC Status Chart */}
+          <div className="bg-white rounded-2xl shadow-md p-4 sm:p-5 border border-gray-100">
+            <h3 className="text-sm font-semibold text-gray-900 mb-4">
+              WLC Status Distribution
+            </h3>
+            <div className="h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={wlcStatusData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={40}
+                    outerRadius={80}
+                    paddingAngle={2}
+                    dataKey="value"
+                  >
+                    {wlcStatusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* VMware Resource Usage */}
+          <div className="bg-white rounded-2xl shadow-md p-4 sm:p-5 border border-gray-100">
+            <h3 className="text-sm font-semibold text-gray-900 mb-4">
+              VMware Resource Usage
+            </h3>
+            <div className="h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={vmwareResourceData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip formatter={(value) => `${value}%`} />
+                  <Legend />
+                  <Bar dataKey="cpu" name="CPU Usage" fill="#3B82F6" />
+                  <Bar dataKey="ram" name="RAM Usage" fill="#10B981" />
+                  <Bar dataKey="storage" name="Storage Usage" fill="#8B5CF6" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="bg-white rounded-2xl shadow-md p-4 sm:p-5 border border-gray-100">
+            <h3 className="text-sm font-semibold text-gray-900 mb-4">
+              Quick Actions
+            </h3>
+            <div className="space-y-3">
+              <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                <div className="font-medium text-gray-900">Tambah IP Baru</div>
+                <div className="text-xs text-gray-500">
+                  Registrasi IP address baru ke sistem
+                </div>
+              </button>
+              <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                <div className="font-medium text-gray-900">Scan Jaringan</div>
+                <div className="text-xs text-gray-500">
+                  Scan subnet untuk device baru
+                </div>
+              </button>
+              <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                <div className="font-medium text-gray-900">Generate Report</div>
+                <div className="text-xs text-gray-500">
+                  Buat laporan infrastruktur mingguan
+                </div>
+              </button>
             </div>
           </div>
         </div>
       </div>
-     <footer className="mt-7 py-4 text-center text-black text-sm space-y-1">
+
+      {/* Modal untuk Detail IP */}
+      {selectedIP && (
+        <IPDetailModal
+          ip={selectedIP.ip}
+          hostname={selectedIP.hostname}
+          mac={selectedIP.mac}
+          subnet={selectedIP.subnet}
+          status={selectedIP.status}
+          location={selectedIP.location}
+          owner={selectedIP.owner}
+          lastUpdated={selectedIP.lastUpdated}
+          assignedUser={selectedIP.assignedUser}
+          onClose={() => setSelectedIP(null)}
+        />
+      )}
+
+      {/* Mobile Filter Modal */}
+      {isMobileMenuOpen && (
+        <MobileFilterModal onClose={() => setIsMobileMenuOpen(false)} />
+      )}
+
+      <footer className="mt-6 py-4 text-center text-black text-sm space-y-1">
         <p>Infradash Created by @Clinton Alfaro</p>
         <p>seatrium.com</p>
-      </footer>  
+      </footer>
     </LayoutDashboard>
   );
 }
