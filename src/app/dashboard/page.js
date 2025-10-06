@@ -640,13 +640,17 @@ export default function DashboardPage() {
                 Volume Total (1.924)
               </div>
               <div className="flex items-center gap-1">
-                <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+                <span className="w-3 h-3 bg-green-500 rounded-full mb-5"></span>
                 Service Rata-rata (87.5%)
               </div>
             </div>
           </div>
         </div>
       </div>
+     <footer className="mt-7 py-4 text-center text-black text-sm space-y-1">
+        <p>Infradash Created by @Clinton Alfaro</p>
+        <p>seatrium.com</p>
+      </footer>  
     </LayoutDashboard>
   );
 }
