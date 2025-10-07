@@ -357,201 +357,380 @@ export default function WLCPage() {
           <button
             onClick={() => setSelectedWLC(item)}
             className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
           >
             <Eye className="w-4 h-4" />
           </button>
-          <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all">
+          <button
+            className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all"
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
             <Edit className="w-4 h-4" />
           </button>
-          <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
+          <button
+            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
             <Trash2 className="w-4 h-4" />
           </button>
-        </div>
-        <div className="text-xs text-gray-500">
-          CPU: {item.cpu}% | RAM: {item.memory}%
         </div>
       </div>
     </div>
   );
 
-  // Modal Detail WLC
+  // Modal Detail WLC - Bootstrap Style
   const WLCDetailModal = ({ wlcData, onClose }) => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-4 md:p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3
-              className={`text-lg md:text-xl font-semibold text-gray-900 ${poppins.className}`}
-            >
-              WLC Controller Details
-            </h3>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 p-1"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
+    <>
+      {/* Modal Backdrop */}
+      <div
+        className="modal-backdrop fade show"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          zIndex: 1040,
+          width: "100vw",
+          height: "100vh",
+          backgroundColor: "#000",
+          opacity: 0.5,
+        }}
+      ></div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 text-black">
-            {/* Basic Info */}
-            <div className="space-y-4">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4
-                  className={`font-semibold text-gray-900 mb-3 ${poppins.className}`}
-                >
-                  Basic Information
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                  <div className={poppins.className}>
-                    <label className="text-gray-500">Controller Name</label>
-                    <p className="font-semibold">{wlcData.name}</p>
-                  </div>
-                  <div className={poppins.className}>
-                    <label className="text-gray-500">Model</label>
-                    <p className="font-semibold">{wlcData.model}</p>
-                  </div>
-                  <div className={poppins.className}>
-                    <label className="text-gray-500">IP Address</label>
-                    <p className="font-mono">{wlcData.ip}</p>
-                  </div>
-                  <div className={poppins.className}>
-                    <label className="text-gray-500">Status</label>
-                    <StatusBadge status={wlcData.status} />
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4
-                  className={`font-semibold text-gray-900 mb-3 ${poppins.className}`}
-                >
-                  Location & Ownership
-                </h4>
-                <div className="space-y-2 text-sm">
-                  <div
-                    className={`flex items-center gap-2 ${poppins.className}`}
-                  >
-                    <MapPin className="w-4 h-4 text-gray-500" />
-                    <span>{wlcData.location}</span>
-                  </div>
-                  <div
-                    className={`flex items-center gap-2 ${poppins.className}`}
-                  >
-                    <Users className="w-4 h-4 text-gray-500" />
-                    <span>{wlcData.owner}</span>
-                  </div>
-                  <div className={poppins.className}>
-                    <label className="text-gray-500">Description</label>
-                    <p>{wlcData.description}</p>
-                  </div>
-                </div>
-              </div>
+      {/* Modal */}
+      <div
+        className="modal fade show"
+        style={{
+          display: "block",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          zIndex: 1050,
+          width: "100%",
+          height: "100%",
+          overflow: "hidden",
+          outline: 0,
+        }}
+        tabIndex="-1"
+        role="dialog"
+        aria-labelledby="wlcModalLabel"
+        aria-hidden="true"
+      >
+        <div
+          className="modal-dialog modal-lg"
+          role="document"
+          style={{
+            maxWidth: "800px",
+            margin: "1.75rem auto",
+          }}
+        >
+          <div
+            className="modal-content"
+            style={{
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
+              pointerEvents: "auto",
+              backgroundColor: "#fff",
+              backgroundClip: "padding-box",
+              border: "1px solid rgba(0,0,0,.2)",
+              borderRadius: "0.3rem",
+              outline: 0,
+            }}
+          >
+            {/* Modal Header */}
+            <div
+              className="modal-header"
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                padding: "1rem",
+                borderBottom: "1px solid #dee2e6",
+                borderTopLeftRadius: "calc(0.3rem - 1px)",
+                borderTopRightRadius: "calc(0.3rem - 1px)",
+              }}
+            >
+              <h5
+                className="modal-title text-black"
+                id="wlcModalLabel"
+                style={{
+                  marginBottom: 0,
+                  lineHeight: "1.5",
+                  fontSize: "1.25rem",
+                  fontWeight: "500",
+                }}
+              >
+                WLC Controller Details
+              </h5>
+              <button
+                type="button"
+                className="close"
+                onClick={onClose}
+                aria-label="Close"
+                style={{
+                  padding: 0,
+                  backgroundColor: "transparent",
+                  border: 0,
+                  fontSize: "1.5rem",
+                  fontWeight: "700",
+                  lineHeight: 1,
+                  color: "#000",
+                  textShadow: "0 1px 0 #fff",
+                  opacity: 0.5,
+                }}
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
             </div>
 
-            {/* Performance Metrics */}
-            <div className="space-y-4">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4
-                  className={`font-semibold text-gray-900 mb-3 ${poppins.className}`}
-                >
-                  Performance Metrics
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                  <div className={poppins.className}>
-                    <label className="text-gray-500">Connected Clients</label>
-                    <p className="text-xl md:text-2xl font-bold text-blue-600">
-                      {wlcData.clients}
+            {/* Modal Body */}
+            <div
+              className="modal-body"
+              style={{
+                position: "relative",
+                flex: "1 1 auto",
+                padding: "1rem",
+              }}
+            >
+              <div className="space-y-4">
+                {/* Basic Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Controller Name
+                    </label>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {wlcData.name}
                     </p>
                   </div>
-                  <div className={poppins.className}>
-                    <label className="text-gray-500">Access Points</label>
-                    <p className="text-xl md:text-2xl font-bold text-green-600">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Model
+                    </label>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {wlcData.model}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      IP Address
+                    </label>
+                    <p className="text-sm font-mono text-gray-900">
+                      {wlcData.ip}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Status
+                    </label>
+                    <div className="mt-1">
+                      <StatusBadge status={wlcData.status} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Location & Ownership */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Location
+                    </label>
+                    <p className="text-sm text-gray-900">{wlcData.location}</p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Owner
+                    </label>
+                    <p className="text-sm text-gray-900">{wlcData.owner}</p>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-xs font-medium text-gray-500">
+                      Description
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {wlcData.description}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Performance Metrics */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Connected Clients
+                    </label>
+                    <p className="text-lg font-bold text-blue-600">
+                      {wlcData.clients} / {wlcData.capacity}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Access Points
+                    </label>
+                    <p className="text-lg font-bold text-green-600">
                       {wlcData.accessPoints}
                     </p>
                   </div>
-                  <div
-                    className={`col-span-1 sm:col-span-2 ${poppins.className}`}
-                  >
-                    <label className="text-gray-500">CPU Usage</label>
-                    <div className="flex items-center gap-2">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      CPU Usage
+                    </label>
+                    <div className="flex items-center gap-2 mt-1">
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
                           className="bg-blue-600 h-2 rounded-full transition-all"
                           style={{ width: `${wlcData.cpu}%` }}
                         ></div>
                       </div>
-                      <span className="font-semibold">{wlcData.cpu}%</span>
+                      <span className="text-sm font-semibold text-gray-900">
+                        {wlcData.cpu}%
+                      </span>
                     </div>
                   </div>
-                  <div
-                    className={`col-span-1 sm:col-span-2 ${poppins.className}`}
-                  >
-                    <label className="text-gray-500">Memory Usage</label>
-                    <div className="flex items-center gap-2">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Memory Usage
+                    </label>
+                    <div className="flex items-center gap-2 mt-1">
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
                           className="bg-purple-600 h-2 rounded-full transition-all"
                           style={{ width: `${wlcData.memory}%` }}
                         ></div>
                       </div>
-                      <span className="font-semibold">{wlcData.memory}%</span>
+                      <span className="text-sm font-semibold text-gray-900">
+                        {wlcData.memory}%
+                      </span>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4
-                  className={`font-semibold text-gray-900 mb-3 ${poppins.className}`}
-                >
-                  Network Information
-                </h4>
-                <div className="space-y-2 text-sm">
-                  <div
-                    className={`flex items-center gap-2 ${poppins.className}`}
-                  >
-                    <Wifi className="w-4 h-4 text-gray-500" />
-                    <span>SSID: {wlcData.ssid}</span>
+                {/* Network Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      SSID
+                    </label>
+                    <p className="text-sm text-gray-900">{wlcData.ssid}</p>
                   </div>
-                  <div
-                    className={`flex items-center gap-2 ${poppins.className}`}
-                  >
-                    <Signal className="w-4 h-4 text-gray-500" />
-                    <span>Bandwidth: {wlcData.bandwidth}</span>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Bandwidth
+                    </label>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {wlcData.bandwidth}
+                    </p>
                   </div>
-                  <div
-                    className={`flex items-center gap-2 ${poppins.className}`}
-                  >
-                    <Calendar className="w-4 h-4 text-gray-500" />
-                    <span>Uptime: {wlcData.uptime}</span>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Uptime
+                    </label>
+                    <p className="text-sm text-gray-900">{wlcData.uptime}</p>
                   </div>
-                  <div className={poppins.className}>
-                    <label className="text-gray-500">Firmware</label>
-                    <p>{wlcData.firmware}</p>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Firmware
+                    </label>
+                    <p className="text-sm text-gray-900">{wlcData.firmware}</p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      License
+                    </label>
+                    <p className="text-sm text-gray-900">{wlcData.license}</p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Last Seen
+                    </label>
+                    <p className="text-sm text-gray-900">{wlcData.lastSeen}</p>
                   </div>
                 </div>
+
+                {/* Alerts
+                {wlcData.alerts > 0 && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                      <span className="text-sm font-medium text-yellow-800">
+                        {wlcData.alerts} active alert
+                        {wlcData.alerts > 1 ? "s" : ""}
+                      </span>
+                    </div>
+                  </div>
+                )} */}
               </div>
             </div>
-          </div>
 
-          <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6 md:mt-8">
-            <button
-              onClick={onClose}
-              className={`px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition ${poppins.className}`}
+            {/* Modal Footer */}
+            <div
+              className="modal-footer"
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                padding: "0.75rem",
+                borderTop: "1px solid #dee2e6",
+                borderBottomRightRadius: "calc(0.3rem - 1px)",
+                borderBottomLeftRadius: "calc(0.3rem - 1px)",
+              }}
             >
-              Tutup
-            </button>
-            <button
-              className={`px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 ${poppins.className}`}
-            >
-              <Edit className="w-4 h-4" />
-              Edit WLC
-            </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={onClose}
+                style={{
+                  color: "#fff",
+                  backgroundColor: "#6c757d",
+                  borderColor: "#6c757d",
+                  padding: "0.375rem 0.75rem",
+                  fontSize: "0.875rem",
+                  lineHeight: "1.5",
+                  borderRadius: "0.2rem",
+                  border: "1px solid transparent",
+                  cursor: "pointer",
+                  margin: "0.25rem",
+                }}
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                style={{
+                  color: "#fff",
+                  backgroundColor: "#007bff",
+                  borderColor: "#007bff",
+                  padding: "0.375rem 0.75rem",
+                  fontSize: "0.875rem",
+                  lineHeight: "1.5",
+                  borderRadius: "0.2rem",
+                  border: "1px solid transparent",
+                  cursor: "pointer",
+                  margin: "0.25rem",
+                }}
+              >
+                Save changes
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 
   return (
@@ -1087,18 +1266,33 @@ export default function WLCPage() {
                             onClick={() => setSelectedWLC(item)}
                             className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
                             title="View Details"
+                            style={{
+                              background: "none",
+                              border: "none",
+                              cursor: "pointer",
+                            }}
                           >
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
                             className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200"
                             title="Edit WLC"
+                            style={{
+                              background: "none",
+                              border: "none",
+                              cursor: "pointer",
+                            }}
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
                             className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
                             title="Delete WLC"
+                            style={{
+                              background: "none",
+                              border: "none",
+                              cursor: "pointer",
+                            }}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

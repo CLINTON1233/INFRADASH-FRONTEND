@@ -390,17 +390,28 @@ export default function IPAMPage() {
   // Mobile IP Card Component
   const MobileIPCard = ({ item }) => (
     <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
-      <div className="flex justify-between items-start">
-        <div>
-          <button
-            onClick={() => setSelectedIP(item)}
-            className="font-mono text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline transition text-left"
-          >
-            {item.ip}
-          </button>
-          <p className="text-sm text-gray-600 mt-1">{item.hostname || "-"}</p>
-        </div>
-        <StatusBadge status={item.status} />
+      <div className="flex gap-2">
+        <button
+          onClick={() => setSelectedIP(item)}
+          className="p-1 text-gray-400 hover:text-blue-600 transition"
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          <Eye className="w-4 h-4" />
+        </button>
+        <button
+          className="p-1 text-gray-400 hover:text-green-600 transition"
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          <Edit className="w-4 h-4" />
+        </button>
       </div>
 
       <div className="grid grid-cols-2 gap-2 text-sm">
@@ -444,149 +455,299 @@ export default function IPAMPage() {
 
   // Modal Detail IP
   const IPDetailModal = ({ ipData, onClose }) => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Detail IP Address
-            </h3>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+    <>
+      {/* Modal Backdrop */}
+      <div
+        className="modal-backdrop fade show"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          zIndex: 1040,
+          width: "100vw",
+          height: "100vh",
+          backgroundColor: "#000",
+          opacity: 0.5,
+        }}
+      ></div>
+
+      {/* Modal */}
+      <div
+        className="modal fade show"
+        style={{
+          display: "block",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          zIndex: 1050,
+          width: "100%",
+          height: "100%",
+          overflow: "hidden",
+          outline: 0,
+        }}
+        tabIndex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div
+          className="modal-dialog"
+          role="document"
+          style={{
+            maxWidth: "500px",
+            margin: "1.75rem auto",
+          }}
+        >
+          <div
+            className="modal-content"
+            style={{
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
+              pointerEvents: "auto",
+              backgroundColor: "#fff",
+              backgroundClip: "padding-box",
+              border: "1px solid rgba(0,0,0,.2)",
+              borderRadius: "0.3rem",
+              outline: 0,
+            }}
+          >
+            {/* Modal Header */}
+            <div
+              className="modal-header"
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                padding: "1rem",
+                borderBottom: "1px solid #dee2e6",
+                borderTopLeftRadius: "calc(0.3rem - 1px)",
+                borderTopRightRadius: "calc(0.3rem - 1px)",
+              }}
             >
-              <XCircle className="w-6 h-6" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-500">
-                  IP Address
-                </label>
-                <p className="text-lg font-mono font-semibold text-gray-900">
-                  {ipData.ip}
-                </p>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-500">
-                  Hostname
-                </label>
-                <p className="text-sm text-gray-900">
-                  {ipData.hostname || "-"}
-                </p>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-500">
-                  MAC Address
-                </label>
-                <p className="text-sm font-mono text-gray-900">
-                  {ipData.mac || "-"}
-                </p>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-500">
-                  Subnet
-                </label>
-                <p className="text-sm text-gray-900">{ipData.subnet}</p>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-gray-500">
-                  VLAN
-                </label>
-                <p className="text-sm text-gray-900">{ipData.vlan}</p>
-              </div>
+              <h5
+                className="modal-title text-black"
+                id="exampleModalLabel"
+                style={{
+                  marginBottom: 0,
+                  lineHeight: "1.5",
+                  fontSize: "1.25rem",
+                  fontWeight: "500",
+                }}
+              >
+                Detail IP Address
+              </h5>
+              <button
+                type="button"
+                className="close"
+                onClick={onClose}
+                aria-label="Close"
+                style={{
+                  padding: 0,
+                  backgroundColor: "transparent",
+                  border: 0,
+                  fontSize: "1.5rem",
+                  fontWeight: "700",
+                  lineHeight: 1,
+                  color: "#000",
+                  textShadow: "0 1px 0 #fff",
+                  opacity: 0.5,
+                }}
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-500">
-                  Status
-                </label>
-                <div className="mt-1">
-                  <StatusBadge status={ipData.status} />
+            {/* Modal Body */}
+            <div
+              className="modal-body"
+              style={{
+                position: "relative",
+                flex: "1 1 auto",
+                padding: "1rem",
+              }}
+            >
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      IP Address
+                    </label>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {ipData.ip}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Status
+                    </label>
+                    <div className="mt-1">
+                      <StatusBadge status={ipData.status} />
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-500">
-                  Device Type
-                </label>
-                <p className="text-sm text-gray-900">
-                  {ipData.deviceType || "-"}
-                </p>
-              </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Hostname
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {ipData.hostname || "-"}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      MAC Address
+                    </label>
+                    <p className="text-sm text-gray-900 font-mono">
+                      {ipData.mac || "-"}
+                    </p>
+                  </div>
+                </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-500">
-                  Lokasi
-                </label>
-                <p className="text-sm text-gray-900">
-                  {ipData.location || "-"}
-                </p>
-              </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-500">
+                    Subnet
+                  </label>
+                  <p className="text-sm text-gray-900">{ipData.subnet}</p>
+                </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-500">
-                  Owner
-                </label>
-                <p className="text-sm text-gray-900">{ipData.owner || "-"}</p>
-              </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      VLAN
+                    </label>
+                    <p className="text-sm text-gray-900">{ipData.vlan}</p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Device Type
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {ipData.deviceType || "-"}
+                    </p>
+                  </div>
+                </div>
 
-              <div>
-                <label className="text-sm font-medium text-gray-500">
-                  Assigned User
-                </label>
-                <p className="text-sm text-gray-900">
-                  {ipData.assignedUser || "-"}
-                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Lokasi
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {ipData.location || "-"}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Owner
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {ipData.owner || "-"}
+                    </p>
+                  </div>
+                </div>
+
+                {ipData.assignedUser && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-medium text-gray-500">
+                        Assigned User
+                      </label>
+                      <p className="text-sm text-gray-900 break-all">
+                        {ipData.assignedUser}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-gray-500">
+                        Last Seen
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {ipData.lastSeen || "-"}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <label className="text-xs font-medium text-gray-500">
+                    Description
+                  </label>
+                  <p className="text-sm text-gray-900 mt-1">
+                    {ipData.description}
+                  </p>
+                </div>
+
+                {ipData.dns && (
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      DNS Record
+                    </label>
+                    <p className="text-sm text-gray-900">{ipData.dns}</p>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
 
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <label className="text-sm font-medium text-gray-500">
-              Description
-            </label>
-            <p className="text-sm text-gray-900 mt-1">{ipData.description}</p>
-          </div>
-
-          <div className="mt-4">
-            <label className="text-sm font-medium text-gray-500">
-              DNS Record
-            </label>
-            <p className="text-sm text-gray-900">{ipData.dns || "-"}</p>
-          </div>
-
-          <div className="mt-4">
-            <label className="text-sm font-medium text-gray-500">
-              Last Seen
-            </label>
-            <p className="text-sm text-gray-900">{ipData.lastSeen || "-"}</p>
-          </div>
-
-          <div className="flex justify-end gap-3 mt-8">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+            {/* Modal Footer */}
+            <div
+              className="modal-footer"
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                padding: "0.75rem",
+                borderTop: "1px solid #dee2e6",
+                borderBottomRightRadius: "calc(0.3rem - 1px)",
+                borderBottomLeftRadius: "calc(0.3rem - 1px)",
+              }}
             >
-              Tutup
-            </button>
-            <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
-              <Edit className="w-4 h-4" />
-              Edit IP
-            </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={onClose}
+                style={{
+                  color: "#fff",
+                  backgroundColor: "#6c757d",
+                  borderColor: "#6c757d",
+                  padding: "0.375rem 0.75rem",
+                  fontSize: "0.875rem",
+                  lineHeight: "1.5",
+                  borderRadius: "0.2rem",
+                  border: "1px solid transparent",
+                  cursor: "pointer",
+                  margin: "0.25rem",
+                }}
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                style={{
+                  color: "#fff",
+                  backgroundColor: "#007bff",
+                  borderColor: "#007bff",
+                  padding: "0.375rem 0.75rem",
+                  fontSize: "0.875rem",
+                  lineHeight: "1.5",
+                  borderRadius: "0.2rem",
+                  border: "1px solid transparent",
+                  cursor: "pointer",
+                  margin: "0.25rem",
+                }}
+              >
+                Save changes
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
-
   return (
     <LayoutDashboard activeMenu={1}>
       <div className="font-[Poppins] space-y-4">
@@ -1017,18 +1178,33 @@ export default function IPAMPage() {
                           onClick={() => setSelectedIP(item)}
                           className="p-2 text-gray-400 hover:text-blue-600 transition"
                           title="View Details"
+                          style={{
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                          }}
                         >
                           <Eye className="w-4 h-4" />
                         </button>
                         <button
                           className="p-2 text-gray-400 hover:text-green-600 transition"
                           title="Edit IP"
+                          style={{
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                          }}
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           className="p-2 text-gray-400 hover:text-red-600 transition"
                           title="Delete IP"
+                          style={{
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                          }}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

@@ -18,6 +18,7 @@ import {
   BarChart3,
   Users,
   BookOpen,
+  LogOut,
 } from "lucide-react";
 
 import Image from "next/image";
@@ -42,23 +43,29 @@ export default function LayoutDashboard({ children, activeMenu }) {
     //   hasDropdown: false,
     //   href: "/field-inventory",
     // },
-    {
-      icon: BarChart3,
-      label: "Reports & Analytics",
-      hasDropdown: false,
-      href: "/reports",
-    },
-    {
-      icon: Users,
-      label: "User Management",
-      hasDropdown: false,
-      href: "/users",
-    },
+    // {
+    //   icon: BarChart3,
+    //   label: "Reports & Analytics",
+    //   hasDropdown: false,
+    //   href: "/reports",
+    // },
+    // {
+    //   icon: Users,
+    //   label: "User Management",
+    //   hasDropdown: false,
+    //   href: "/users",
+    // },
     {
       icon: Settings,
       label: "System Settings",
       hasDropdown: false,
       href: "/settings",
+    },
+        {
+      icon: LogOut,
+      label: "Logout",
+      hasDropdown: false,
+      href: "/login",
     },
     // { icon: BookOpen, label: "User Guide", hasDropdown: false, href: "/guide" },
   ];

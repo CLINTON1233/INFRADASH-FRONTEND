@@ -196,35 +196,48 @@ export default function DashboardPage() {
   });
 
   // Komponen Modal untuk Detail IP
-  const IPDetailModal = ({
-    ip,
-    hostname,
-    mac,
-    subnet,
-    status,
-    location,
-    owner,
-    lastUpdated,
-    assignedUser,
-    onClose,
-  }) => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-      <div className="bg-white rounded-xl shadow-2xl border border-gray-300 w-full max-w-md max-h-[90vh] overflow-y-auto">
+// Komponen Modal untuk Detail IP - Versi Bootstrap Style
+const IPDetailModal = ({
+  ip,
+  hostname,
+  mac,
+  subnet,
+  status,
+  location,
+  owner,
+  lastUpdated,
+  assignedUser,
+  onClose,
+}) => (
+  <div className="modal fade show" style={{display: 'block', backgroundColor: 'rgba(0,0,0,0.5)'}} tabIndex="-1" role="dialog">
+    <div className="modal-dialog" role="document">
+      <div className="modal-content">
         {/* Modal Header */}
-        <div className="bg-green-600 text-white px-4 py-3 rounded-t-xl sticky top-0">
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-semibold">Detail IP Address</h2>
-            <button
-              onClick={onClose}
-              className="text-white text-xl font-bold hover:text-gray-200 transition w-6 h-6 flex items-center justify-center"
-            >
-              &times;
-            </button>
-          </div>
+        <div className="modal-header" style={{padding: '1rem', borderBottom: '1px solid #dee2e6'}}>
+          <h5 className="modal-title" style={{margin: 0, fontSize: '1.25rem', fontWeight: '500'}}>
+            Modal title
+          </h5>
+          <button 
+            type="button" 
+            className="close" 
+            onClick={onClose}
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: '1.5rem',
+              fontWeight: '700',
+              lineHeight: '1',
+              color: '#000',
+              opacity: '0.5',
+              cursor: 'pointer'
+            }}
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
 
         {/* Modal Body */}
-        <div className="px-4 py-4">
+        <div className="modal-body" style={{padding: '1rem'}}>
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -306,22 +319,47 @@ export default function DashboardPage() {
         </div>
 
         {/* Modal Footer */}
-        <div className="bg-gray-50 px-4 py-3 rounded-b-xl border-t border-gray-200 sticky bottom-0">
-          <div className="flex flex-col sm:flex-row gap-2 justify-end">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition flex-1 sm:flex-none"
-            >
-              Tutup
-            </button>
-            <button className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition flex-1 sm:flex-none">
-              Edit Detail
-            </button>
-          </div>
+        <div className="modal-footer" style={{padding: '1rem', borderTop: '1px solid #dee2e6'}}>
+          <button 
+            type="button" 
+            className="btn btn-secondary" 
+            onClick={onClose}
+            style={{
+              padding: '0.375rem 0.75rem',
+              fontSize: '0.875rem',
+              fontWeight: '400',
+              lineHeight: '1.5',
+              color: '#fff',
+              backgroundColor: '#6c757d',
+              border: '1px solid #6c757d',
+              borderRadius: '0.375rem',
+              cursor: 'pointer'
+            }}
+          >
+            Close
+          </button>
+          <button 
+            type="button" 
+            className="btn btn-primary"
+            style={{
+              padding: '0.375rem 0.75rem',
+              fontSize: '0.875rem',
+              fontWeight: '400',
+              lineHeight: '1.5',
+              color: '#fff',
+              backgroundColor: '#007bff',
+              border: '1px solid #007bff',
+              borderRadius: '0.375rem',
+              cursor: 'pointer'
+            }}
+          >
+            Save changes
+          </button>
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 
   // Mobile Filter Modal
   const MobileFilterModal = ({ onClose, onApply }) => (
@@ -1014,21 +1052,253 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Modal untuk Detail IP */}
-      {selectedIP && (
-        <IPDetailModal
-          ip={selectedIP.ip}
-          hostname={selectedIP.hostname}
-          mac={selectedIP.mac}
-          subnet={selectedIP.subnet}
-          status={selectedIP.status}
-          location={selectedIP.location}
-          owner={selectedIP.owner}
-          lastUpdated={selectedIP.lastUpdated}
-          assignedUser={selectedIP.assignedUser}
-          onClose={() => setSelectedIP(null)}
-        />
-      )}
+     {/* Modal untuk Detail IP */}
+{selectedIP && (
+  <>
+    {/* Backdrop */}
+    <div 
+      className="modal-backdrop fade show"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        zIndex: 1040,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: '#000',
+        opacity: 0.5
+      }}
+    ></div>
+    
+    {/* Modal */}
+    <div 
+      className="modal fade show" 
+      style={{
+        display: 'block',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        zIndex: 1050,
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        outline: 0
+      }} 
+      tabIndex="-1" 
+      role="dialog"
+    >
+      <div 
+        className="modal-dialog" 
+        role="document"
+        style={{
+          maxWidth: '500px',
+          margin: '1.75rem auto'
+        }}
+      >
+        <div 
+          className="modal-content"
+          style={{
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            pointerEvents: 'auto',
+            backgroundColor: '#fff',
+            backgroundClip: 'padding-box',
+            border: '1px solid rgba(0,0,0,.2)',
+            borderRadius: '0.3rem',
+            outline: 0
+          }}
+        >
+          {/* Modal Header */}
+          <div 
+            className="modal-header"
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              padding: '1rem',
+              borderBottom: '1px solid #dee2e6',
+              borderTopLeftRadius: 'calc(0.3rem - 1px)',
+              borderTopRightRadius: 'calc(0.3rem - 1px)'
+            }}
+          >
+            <h5 
+              className="modal-title text-black"
+              style={{
+                marginBottom: 0,
+                lineHeight: '1.5',
+                fontSize: '1.25rem',
+                fontWeight: '500'
+                
+              }}
+            >
+              Detail IP Address
+            </h5>
+            <button 
+              type="button" 
+              className="close" 
+              onClick={() => setSelectedIP(null)}
+              style={{
+                padding: 0,
+                backgroundColor: 'transparent',
+                border: 0,
+                fontSize: '1.5rem',
+                fontWeight: '700',
+                lineHeight: 1,
+                color: '#000',
+                textShadow: '0 1px 0 #fff',
+                opacity: 0.5
+              }}
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          {/* Modal Body */}
+          <div 
+            className="modal-body"
+            style={{
+              position: 'relative',
+              flex: '1 1 auto',
+              padding: '1rem'
+            }}
+          >
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-medium text-gray-500">
+                    IP Address
+                  </label>
+                  <p className="text-sm font-semibold text-gray-900">{selectedIP.ip}</p>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-500">
+                    Status
+                  </label>
+                  <p className={`text-sm font-semibold ${
+                    selectedIP.status === "Aktif" ? "text-green-600" : "text-red-500"
+                  }`}>
+                    {selectedIP.status}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-medium text-gray-500">
+                    Hostname
+                  </label>
+                  <p className="text-sm text-gray-900">{selectedIP.hostname}</p>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-500">
+                    MAC Address
+                  </label>
+                  <p className="text-sm text-gray-900 font-mono">{selectedIP.mac}</p>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-gray-500">
+                  Subnet
+                </label>
+                <p className="text-sm text-gray-900">{selectedIP.subnet}</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-medium text-gray-500">
+                    Lokasi
+                  </label>
+                  <p className="text-sm text-gray-900">{selectedIP.location}</p>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-500">
+                    Owner
+                  </label>
+                  <p className="text-sm text-gray-900">{selectedIP.owner}</p>
+                </div>
+              </div>
+
+              {selectedIP.lastUpdated && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Last Updated
+                    </label>
+                    <p className="text-sm text-gray-900">{selectedIP.lastUpdated}</p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Assigned User
+                    </label>
+                    <p className="text-sm text-gray-900 break-all">
+                      {selectedIP.assignedUser}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Modal Footer */}
+          <div 
+            className="modal-footer"
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              padding: '0.75rem',
+              borderTop: '1px solid #dee2e6',
+              borderBottomRightRadius: 'calc(0.3rem - 1px)',
+              borderBottomLeftRadius: 'calc(0.3rem - 1px)'
+            }}
+          >
+            <button 
+              type="button" 
+              className="btn btn-secondary" 
+              onClick={() => setSelectedIP(null)}
+              style={{
+                color: '#fff',
+                backgroundColor: '#6c757d',
+                borderColor: '#6c757d',
+                padding: '0.375rem 0.75rem',
+                fontSize: '0.875rem',
+                lineHeight: '1.5',
+                borderRadius: '0.2rem',
+                border: '1px solid transparent',
+                cursor: 'pointer',
+                margin: '0.25rem'
+              }}
+            >
+              Close
+            </button>
+            <button 
+              type="button" 
+              className="btn btn-primary"
+              style={{
+                color: '#fff',
+                backgroundColor: '#007bff',
+                borderColor: '#007bff',
+                padding: '0.375rem 0.75rem',
+                fontSize: '0.875rem',
+                lineHeight: '1.5',
+                borderRadius: '0.2rem',
+                border: '1px solid transparent',
+                cursor: 'pointer',
+                margin: '0.25rem'
+              }}
+            >
+              Save changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </>
+)}
 
       {/* Mobile Filter Modal */}
       {isMobileMenuOpen && (

@@ -582,15 +582,34 @@ export default function VMwarePage() {
         <button
           onClick={() => setSelectedHost(item)}
           className="flex items-center gap-1 text-blue-600 text-sm font-medium"
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer'
+          }}
         >
           <Eye className="w-4 h-4" />
           Details
         </button>
         <div className="flex gap-2">
-          <button className="p-1 text-gray-400 hover:text-green-600">
+          <button 
+            className="p-1 text-gray-400 hover:text-green-600"
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
             <Edit className="w-4 h-4" />
           </button>
-          <button className="p-1 text-gray-400 hover:text-red-600">
+          <button 
+            className="p-1 text-gray-400 hover:text-red-600"
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
@@ -598,9 +617,396 @@ export default function VMwarePage() {
     </div>
   );
 
+  // Modal Detail VMware Host - Bootstrap Style
+  const VMwareDetailModal = ({ hostData, onClose }) => (
+    <>
+      {/* Modal Backdrop */}
+      <div 
+        className="modal-backdrop fade show"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          zIndex: 1040,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: '#000',
+          opacity: 0.5
+        }}
+      ></div>
+      
+      {/* Modal */}
+      <div 
+        className="modal fade show" 
+        style={{
+          display: 'block',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          zIndex: 1050,
+          width: '100%',
+          height: '100%',
+          overflow: 'hidden',
+          outline: 0
+        }} 
+        tabIndex="-1" 
+        role="dialog"
+        aria-labelledby="vmwareModalLabel"
+        aria-hidden="true"
+      >
+        <div 
+          className="modal-dialog modal-lg" 
+          role="document"
+          style={{
+            maxWidth: '800px',
+            margin: '1.75rem auto'
+          }}
+        >
+          <div 
+            className="modal-content"
+            style={{
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+              pointerEvents: 'auto',
+              backgroundColor: '#fff',
+              backgroundClip: 'padding-box',
+              border: '1px solid rgba(0,0,0,.2)',
+              borderRadius: '0.3rem',
+              outline: 0
+            }}
+          >
+            {/* Modal Header */}
+            <div 
+              className="modal-header"
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'space-between',
+                padding: '1rem',
+                borderBottom: '1px solid #dee2e6',
+                borderTopLeftRadius: 'calc(0.3rem - 1px)',
+                borderTopRightRadius: 'calc(0.3rem - 1px)'
+              }}
+            >
+              <h5 
+                className="modal-title text-black"
+                id="vmwareModalLabel"
+                style={{
+                  marginBottom: 0,
+                  lineHeight: '1.5',
+                  fontSize: '1.25rem',
+                  fontWeight: '500'
+                }}
+              >
+                VMware Host Details
+              </h5>
+              <button 
+                type="button" 
+                className="close" 
+                onClick={onClose}
+                aria-label="Close"
+                style={{
+                  padding: 0,
+                  backgroundColor: 'transparent',
+                  border: 0,
+                  fontSize: '1.5rem',
+                  fontWeight: '700',
+                  lineHeight: 1,
+                  color: '#000',
+                  textShadow: '0 1px 0 #fff',
+                  opacity: 0.5
+                }}
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div 
+              className="modal-body"
+              style={{
+                position: 'relative',
+                flex: '1 1 auto',
+                padding: '1rem'
+              }}
+            >
+              <div className="space-y-4">
+                {/* Basic Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Host Name
+                    </label>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {hostData.name}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      IP Address
+                    </label>
+                    <p className="text-sm font-mono text-gray-900">
+                      {hostData.ip}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Cluster
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {hostData.cluster}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Status
+                    </label>
+                    <div className="mt-1">
+                      <StatusBadge status={hostData.status} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Location & Ownership */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Location
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {hostData.location}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Owner
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {hostData.owner}
+                    </p>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-xs font-medium text-gray-500">
+                      Description
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {hostData.description}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Resource Usage */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      CPU Usage
+                    </label>
+                    <p className="text-lg font-bold text-blue-600">
+                      {hostData.cpu.usage}%
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all"
+                          style={{ width: `${hostData.cpu.usage}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {hostData.cpu.cores} cores @ {hostData.cpu.speed}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Memory Usage
+                    </label>
+                    <p className="text-lg font-bold text-purple-600">
+                      {hostData.memory.usage}%
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-purple-600 h-2 rounded-full transition-all"
+                          style={{ width: `${hostData.memory.usage}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {hostData.memory.used}GB / {hostData.memory.total}GB
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Storage Usage
+                    </label>
+                    <p className="text-lg font-bold text-green-600">
+                      {hostData.storage.usage}%
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-green-600 h-2 rounded-full transition-all"
+                          style={{ width: `${hostData.storage.usage}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {hostData.storage.used}GB / {hostData.storage.total}GB
+                    </p>
+                  </div>
+                </div>
+
+                {/* Virtual Machines */}
+                <div>
+                  <label className="text-xs font-medium text-gray-500 mb-2 block text-black">
+                    Virtual Machines
+                  </label>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                      <div>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {hostData.vms.total}
+                        </p>
+                        <p className="text-xs text-gray-500">Total VMs</p>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-green-600">
+                          {hostData.vms.running}
+                        </p>
+                        <p className="text-xs text-gray-500">Running</p>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-gray-600">
+                          {hostData.vms.stopped}
+                        </p>
+                        <p className="text-xs text-gray-500">Stopped</p>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-red-600">
+                          {hostData.vms.error}
+                        </p>
+                        <p className="text-xs text-gray-500">Error</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* System Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      vCenter Version
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {hostData.version}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">
+                      Last Seen
+                    </label>
+                    <p className="text-sm text-gray-900">
+                      {hostData.lastSeen}
+                    </p>
+                  </div>
+                </div>
+
+                {/* VM List */}
+                {hostData.virtualMachines && hostData.virtualMachines.length > 0 && (
+                  <div>
+                    <label className="text-xs font-medium text-gray-500 mb-2 block">
+                      Virtual Machine Details
+                    </label>
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {hostData.virtualMachines.map((vm) => (
+                        <div key={vm.id} className="flex justify-between items-center p-2 bg-white border border-gray-200 rounded">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-2 h-2 rounded-full ${
+                              vm.status === 'running' ? 'bg-green-500' : 'bg-gray-400'
+                            }`} />
+                            <span className="text-sm font-medium text-black">{vm.name}</span>
+                          </div>
+                          <div className="flex gap-4 text-xs  text-black">
+                            <span>CPU: {vm.cpu}%</span>
+                            <span>RAM: {vm.memory}GB</span>
+                            <span>Storage: {vm.storage}GB</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+               
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div 
+              className="modal-footer"
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                padding: '0.75rem',
+                borderTop: '1px solid #dee2e6',
+                borderBottomRightRadius: 'calc(0.3rem - 1px)',
+                borderBottomLeftRadius: 'calc(0.3rem - 1px)'
+              }}
+            >
+              <button 
+                type="button" 
+                className="btn btn-secondary" 
+                onClick={onClose}
+                style={{
+                  color: '#fff',
+                  backgroundColor: '#6c757d',
+                  borderColor: '#6c757d',
+                  padding: '0.375rem 0.75rem',
+                  fontSize: '0.875rem',
+                  lineHeight: '1.5',
+                  borderRadius: '0.2rem',
+                  border: '1px solid transparent',
+                  cursor: 'pointer',
+                  margin: '0.25rem'
+                }}
+              >
+                Close
+              </button>
+              <button 
+                type="button" 
+                className="btn btn-primary"
+                style={{
+                  color: '#fff',
+                  backgroundColor: '#007bff',
+                  borderColor: '#007bff',
+                  padding: '0.375rem 0.75rem',
+                  fontSize: '0.875rem',
+                  lineHeight: '1.5',
+                  borderRadius: '0.2rem',
+                  border: '1px solid transparent',
+                  cursor: 'pointer',
+                  margin: '0.25rem'
+                }}
+              >
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <LayoutDashboard activeMenu={3}>
       <div className={`${poppins.className} space-y-6`}>
+        {selectedHost && (
+          <VMwareDetailModal hostData={selectedHost} onClose={() => setSelectedHost(null)} />
+        )}
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
           <div>
@@ -1113,18 +1519,33 @@ export default function VMwarePage() {
                             onClick={() => setSelectedHost(item)}
                             className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
                             title="View Details"
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer'
+                            }}
                           >
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
                             className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200"
                             title="Edit Host"
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer'
+                            }}
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
                             className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
                             title="Delete Host"
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer'
+                            }}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
